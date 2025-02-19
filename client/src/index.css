@@ -1,0 +1,52 @@
+/* src/index.css */
+/* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap'); */
+
+@import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
+
+
+
+:root {
+  --white: #ffffff;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-500: #6b7280;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --blue-200: #93c5fd;
+  --blue-400: #60a5fa;
+  --blue-500: #3b82f6;  
+  --dark-bg: #101214;
+  --dark-secondary: #1d1f21;
+  --dark-tertiary: #3b3d40;
+  --blue-primary: #0275ff;
+  --stroke-dark: #2d3135;
+  --background: var(--background);
+  --foreground: var(--foreground);
+}
+
+html, body {
+  font-family: 'Inter', sans-serif;
+  background-color: black;
+}
+
+  html, body, #root, .app {
+      height: 100%;
+      width: 100%;
+      font-size: .875rem;
+      line-height: 1.25rem;
+      --tw-text-opacity: 1;
+      color: rgb(0 0 0 / var(--tw-text-opacity, 1));
+      --tw-bg-opacity: 1;
+      background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+      /* background-color: black; */
+      @apply text-sm;
+      @apply text-black;
+      @apply bg-white;
+      @apply dark:bg-black;
+    }
+    
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }

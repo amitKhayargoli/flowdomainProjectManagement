@@ -1,0 +1,102 @@
+[
+  {
+    "username": "AmitSharma",
+    "teamId": 1,
+    "profilePictureUrl": "p1.jpeg"
+  },
+  {
+    "username": "BishalThapa",
+    "teamId": 2,
+    "profilePictureUrl": "p2.jpeg"
+  },
+  {
+    "username": "CharulataRai",
+    "teamId": 3,
+    "profilePictureUrl": "p3.jpeg"
+  },
+  {
+    "username": "DineshAdhikari",
+    "teamId": 4,
+    "profilePictureUrl": "p4.jpeg"
+  },
+  {
+    "username": "EktaJoshi",
+    "teamId": 5,
+    "profilePictureUrl": "p5.jpeg"
+  },
+  {
+    "username": "FirozKhan",
+    "teamId": 1,
+    "profilePictureUrl": "p6.jpeg"
+  },
+  {
+    "username": "GitaKoirala",
+    "teamId": 2,
+    "profilePictureUrl": "p7.jpeg"
+  },
+  {
+    "username": "HariPrasad",
+    "teamId": 3,
+    "profilePictureUrl": "p8.jpeg"
+  },
+  {
+    "username": "IndiraBhandari",
+    "teamId": 4,
+    "profilePictureUrl": "p9.jpeg"
+  },
+  {
+    "username": "JeevanRai",
+    "teamId": 5,
+    "profilePictureUrl": "p10.jpeg"
+  },
+  {
+    "username": "LaxmiAdhikari",
+    "teamId": 1,
+    "profilePictureUrl": "p11.jpeg"
+  },
+  {
+    "username": "NirakarPoudel",
+    "teamId": 2,
+    "profilePictureUrl": "p12.jpeg"
+  },
+  {
+    "username": "OmeshYadav",
+    "teamId": 3,
+    "profilePictureUrl": "p13.jpeg"
+  },
+  {
+    "username": "PrakashBista",
+    "teamId": 4,
+    "profilePictureUrl": "p1.jpeg"
+  },
+  {
+    "username": "QuibhaShrestha",
+    "teamId": 5,
+    "profilePictureUrl": "p2.jpeg"
+  },
+  {
+    "username": "RupaPandey",
+    "teamId": 1,
+    "profilePictureUrl": "p3.jpeg"
+  },
+  {
+    "username": "SumanBista",
+    "teamId": 2,
+    "profilePictureUrl": "p4.jpeg"
+  },
+  {
+    "username": "TaraRai",
+    "teamId": 3,
+    "profilePictureUrl": "p5.jpeg"
+  },
+  {
+    "username": "UjjwalShrestha",
+    "teamId": 4,
+    "profilePictureUrl": "p6.jpeg"
+  },
+  {
+    "username": "VikramKarki",
+    "teamId": 5,
+    "profilePictureUrl": "p7.jpeg"
+  }
+]
