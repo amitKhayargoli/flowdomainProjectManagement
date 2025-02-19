@@ -14,9 +14,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  user
+  admin
+}
+
+// enum status{
+//   To do
+//   Work In Progress
+//   Review
+//   Completed
+// }
+
 model User {
-  userId            Int     @id @default(autoincrement())
-  username          String  @unique
+  userId   Int    @id @default(autoincrement())
+  username String
+  email    String @unique
+  password String
+  role     Role   @default(user)
+
   profilePictureUrl String?
   teamId            Int?
 
