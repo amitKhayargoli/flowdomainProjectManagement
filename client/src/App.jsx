@@ -11,6 +11,8 @@ import Hero from "./pages/Hero";
 import Signup from "./pages/user/Signup";
 import Projects from "./pages/Projects";
 
+import ProtectedRoute from "./ProtectedRoute";
+
 function App() {
   return (
     <Provider store={store}>
@@ -20,10 +22,12 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/" element={<Hero />} />
 
-          <Route path="/workspace" element={<DashboardLayout />}>
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="projects" element={<Projects />} />
-            <Route path="projects/:id" element={<Project />} />
+          <Route element={<ProtectedRoute roleRequired={"user"} />}>
+            <Route path="/workspace" element={<DashboardLayout />}>
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="projects" element={<Projects />} />
+              <Route path="projects/:id" element={<Project />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>
