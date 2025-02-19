@@ -9,6 +9,7 @@ import taskRoutes from "./routes/taskRoutes.js";
 import authRouter from "./routes/authRoute.js";
 import uploadRouter from "./routes/uploadRoutes.js";
 import userRouter from "./routes/userRoute.js";
+import { authenticateToken } from "./middleware/token-middleware.js";
 
 dotenv.config();
 const app = express();
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
 app.use(bodyParser.json());
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
@@ -26,10 +28,13 @@ app.get("/", (req, res) => {
   res.send("This is the home route");
 });
 
-app.use("/projects", projectRoutes);
-app.use("/tasks", taskRoutes);
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
+
+// app.use(authenticateToken);
+
+app.use("/projects", projectRoutes);
+app.use("/tasks", taskRoutes);
 app.use("/api/file", uploadRouter);
 
 app.use((req, res, next) => {
