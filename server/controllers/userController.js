@@ -1,26 +1,41 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
+import bcrypt from "bcryptjs";
+
 export const create = async (req, res) => {
+  const { username, email, password } = req.body;
   try {
-    const body = req.body;
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email is already registered." });
+    }
+
     console.log(req.body);
 
-    if (!body?.username || !body?.email || !body?.password) {
-      return res.status(500).send({ message: "Invalid" });
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: "Invalid input" });
     }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const users = await prisma.user.create({
       data: {
-        username: body.username,
-        email: body.email,
-        password: body.password,
+        username,
+        email,
+        password: hashedPassword, // Store hashed password
       },
     });
-    res.status(201).send({ data: users, message: "successfully created user" });
+
+    res.status(201).json({ data: users, message: "User created successfully" });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "failed to create user" });
+    console.error(error);
+    res.status(500).json({ error: "Failed to create user" });
   }
 };
 
