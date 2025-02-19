@@ -1,9 +1,5 @@
-/* .color{
-    height: 800px;
-    width:800px;
-    background-image: radial-gradient(closest-side,rgba(0, 149, 255, 0.77),#000000);
-    
-    
-} */
-
-
+.custom-gradient {
+    background: rgb(0,0,0);
+background: linear-gradient(144deg, rgba(0,0,0,1) 0%, rgba(32,134,215,1) 52%, rgba(3,37,87,1) 100%);
+  }
+  
