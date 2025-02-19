@@ -13,10 +13,6 @@ export function authenticateToken(req, res, next) {
     return next();
   }
 
-  if (req.path === "/api/userProfile") {
-    return next();
-  }
-
   // Get token from Authorization header
   const authorizationHeader = req.header("Authorization");
   console.log("Authorization Header:", authorizationHeader);
