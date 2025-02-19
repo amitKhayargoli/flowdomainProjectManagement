@@ -10,7 +10,7 @@ const HomeNav = () => {
     <div className="px-5 h-25 flex justify-between items-center bg-black">
       <img src={Logo} alt="" className="h-full" />
 
-      <ul className="flex text-2xl font-semibold text-[#5F5F69]  gap-10">
+      <ul className="md:flex text-2xl font-semibold text-[#5F5F69]  gap-10 hidden">
         <li className={liClassNames}>Product</li>
         <li className={liClassNames}>Pricing</li>
         <li className={liClassNames}>Blog</li>

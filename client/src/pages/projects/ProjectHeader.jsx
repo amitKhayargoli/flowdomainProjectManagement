@@ -15,7 +15,7 @@ const ProjectHeader = ({ activeTab, setActiveTab }) => {
   const [isNewProjectOpen, setIsNewProjectOpen] = useState(false);
 
   return (
-    <div className="px-4 xl:px-6">
+    <div className="px-4 xl:px-6 w-full">
       {/*Model New Project */}
 
       <ModalNewProject
