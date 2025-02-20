@@ -56,6 +56,8 @@ const ModalNewTask = ({ isOpen, onClose, id }) => {
         assignedUserId: parseInt(assignedUserId),
         projectId: Number(id),
       });
+
+      console.log(status);
       setIsLoading(false); // Set loading state to false
       onClose(); // Close the modal after creating the task
     } catch (error) {
@@ -65,7 +67,7 @@ const ModalNewTask = ({ isOpen, onClose, id }) => {
   };
 
   const isFormValid = () => {
-    return title && authorUserId && startDate && dueDate;
+    return title && authorUserId && startDate && dueDate && status;
   };
 
   const selectStyles =
@@ -103,7 +105,7 @@ const ModalNewTask = ({ isOpen, onClose, id }) => {
           <select
             className={selectStyles}
             value={status}
-            onChange={(e) => setStatus(Status[e.target.value])}
+            onChange={(e) => setStatus(e.target.value)}
           >
             <option value="">Select Status</option>
             <option value={Status.ToDo}>To do</option>
@@ -115,7 +117,7 @@ const ModalNewTask = ({ isOpen, onClose, id }) => {
           <select
             className={selectStyles}
             value={priority}
-            onChange={(e) => setPriority(Priority[e.target.value])}
+            onChange={(e) => setPriority(e.target.value)}
           >
             <option value="">Select Priority</option>
             <option value={Priority.High}>High</option>
@@ -167,7 +169,7 @@ const ModalNewTask = ({ isOpen, onClose, id }) => {
 
         <button
           type="submit"
-          className={`focus-offset-2 mt-4 flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+          className={`focus-offset-2 mt-4 flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-600  focus:outline-none focus:ring-2 focus:ring-blue-600 ${
             !isFormValid() || isLoading ? "cursor-not-allowed opacity-50" : ""
           }`}
           disabled={!isFormValid() || isLoading}
