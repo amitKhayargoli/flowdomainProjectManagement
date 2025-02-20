@@ -33,7 +33,8 @@ const Project = () => {
   }
 
   return (
-    <div className={`${theme === "dark" ? "dark" : ""}`}>
+    // custom-gradient
+    <div className="h-full custom-gradient">
       <ModalNewTask
         isOpen={isNewTaskOpen}
         onClose={() => setIsNewTaskOpen(false)}

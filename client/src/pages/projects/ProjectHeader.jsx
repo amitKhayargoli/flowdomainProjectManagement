@@ -28,7 +28,8 @@ const ProjectHeader = ({ activeTab, setActiveTab }) => {
           name="Domain Expansion"
           buttonComponent={
             <button
-              className="flex items-center rounded-md bg-blue-500 px-3 py-3 dark:bg-white dark:text-black dark:hover:text-white dark:hover:bg-black dark:hover:border-1 dark:hover:border-gray-600 text-white hover:bg-blue-600 transition duration-300 ease-in"
+              className="flex items-center rounded-md bg-blue-500 px-3 py-3 dark:bg-white dark:text-black dark:hover:text-white dark:hover:bg-black border-white dark:border-black border-hidden border-1 dark:hover:border-gray-600 text-white hover:bg-blue-600 
+              transition-transform duration-500 transform hover:scale-115 cursor-pointer ease-in-out "
               onClick={() => setIsNewProjectOpen(true)}
             >
               <LucidePlus className="mr-2 h-5 w-5" /> New Project
@@ -63,11 +64,11 @@ const ProjectHeader = ({ activeTab, setActiveTab }) => {
         </div>
 
         <div className="flex items-center gap-2">
-          <button className="text-gray-500 hover:text-gray-600 dark:text-neutral-500 dark:hover:text-gray-300">
+          <button className="text-gray-500 hover:text-gray-600 dark:text-white dark:hover:text-gray-400">
             <Filter className="h-5 w-5"></Filter>
           </button>
 
-          <button className="text-gray-500 hover:text-gray-600 dark:text-neutral-500 dark:hover:text-gray-300">
+          <button className="text-gray-500 hover:text-gray-600 dark:text-white dark:hover:text-gray-400">
             <Share2 className="h-5 w-5"></Share2>
           </button>
 
@@ -75,9 +76,9 @@ const ProjectHeader = ({ activeTab, setActiveTab }) => {
             <input
               type="text"
               placeholder="Search Tasks"
-              className="rounded-md border py-1 pl-10 pr-4 focus:outline-none dark:border-gray-500 dark:text-white"
+              className="rounded-md border py-1 pl-10 pr-4 focus:outline-none dark:border-white dark:text-white"
             />
-            <Grid3X3 className="absolute left-3 top-2 h-4 w-4 text-gray-400 dark:text-neutral-500"></Grid3X3>
+            <Grid3X3 className="absolute left-3 top-2 h-4 w-4 text-gray-400 dark:text-white"></Grid3X3>
           </div>
         </div>
       </div>
