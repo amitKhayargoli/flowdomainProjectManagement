@@ -3,3 +3,18 @@
 background: linear-gradient(144deg, rgba(0,0,0,1) 0%, rgba(32,134,215,1) 52%, rgba(3,37,87,1) 100%);
   }
   
+
+  @keyframes fade {
+    from {
+    opacity:0;
+
+    }
+    to {
+
+      opacity: 1;
+    }
+  }
+  
+  .animate-float {
+    animation: fade 1s ease-in-out;
+  }

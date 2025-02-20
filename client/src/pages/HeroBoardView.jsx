@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { motion } from "framer-motion";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
 import { EllipsisVertical, MessageSquareQuoteIcon, Plus } from "lucide-react";
@@ -48,19 +49,27 @@ const HeroBoardView = ({ id, setIsNewTaskOpen }) => {
   };
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div className="grid p-5 grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {taskStatus.map((status) => (
-          <TaskColumn
-            key={status}
-            status={status}
-            tasks={tasks}
-            moveTask={moveTask}
-            setIsNewTaskOpen={setIsNewTaskOpen}
-          />
-        ))}
-      </div>
-    </DndProvider>
+    <motion.div
+      className="flex p-5 sm:p-3 justify-between items-center mb-5"
+      initial={{ opacity: 0, y: 60 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1 }}
+      viewport={{ once: false, amount: 1 }}
+    >
+      <DndProvider backend={HTML5Backend}>
+        <div className="w-full grid grid-cols-1 gap-4 md:grid-cols-4">
+          {taskStatus.map((status) => (
+            <TaskColumn
+              key={status}
+              status={status}
+              tasks={tasks}
+              moveTask={moveTask}
+              setIsNewTaskOpen={setIsNewTaskOpen}
+            />
+          ))}
+        </div>
+      </DndProvider>
+    </motion.div>
   );
 };
 
