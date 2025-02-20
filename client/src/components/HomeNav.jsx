@@ -15,7 +15,9 @@ const HomeNav = () => {
         <li className={liClassNames}>Pricing</li>
         <li className={liClassNames}>Blog</li>
         <li className={liClassNames}>Docs</li>
-        <li className={liClassNames}>Changelog</li>
+        <li className={liClassNames} onClick={() => navigate("/changelog")}>
+          Changelog
+        </li>
       </ul>
 
       <button
