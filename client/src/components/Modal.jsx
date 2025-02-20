@@ -9,8 +9,8 @@ const Modal = ({ children, isOpen, onClose, name }) => {
   if (!isOpen) return null;
 
   return ReactDOM.createPortal(
-    <div className="fixed inset-0 flex h-full w-full items-center justify-center overflow-y-auto backdrop-blur-[5] bg-black/30 bg-opacity-50 p-4">
-      <div className="w-full max-w-2xl rounded-lg bg-white p-4 shadow-lg dark:bg-[#1d1f21]">
+    <div className="fixed inset-0 flex h-full w-full items-center justify-center overflow-y-auto backdrop-blur-[1px] bg-black/30 bg-opacity-50 p-4 ">
+      <div className="w-full max-w-2xl rounded-lg bg-white p-4 shadow-lg dark:bg-[#1d1f21] animate-float">
         <Header
           name={name}
           buttonComponent={
