@@ -20,16 +20,16 @@ const ListView = ({ id, setIsNewTaskOpen }) => {
     fetchTasks();
   }, [id]);
 
-  console.log(tasks);
+  // console.log(tasks);
 
   return (
-    <div className="px-4 pb-8 xl:px-6">
+    <div className="w-full px-4 pb-8 py-5 xl:px-6">
       <div className="pt-5">
         <Header
-          name="List"
+          name="ListView"
           buttonComponent={
             <button
-              className="flex items-center rounded-sm bg-blue-500 px-3 py-2 text-white hover:bg-blue-600 dark:bg-white dark:text-black dark:hover:text-white dark:hover:bg-black dark:hover:border-1 dark:hover:border-gray-600 cursor-pointer transition duration-300 ease-in"
+              className="flex items-center rounded-sm bg-blue-500 px-3 py-2 text-white hover:bg-blue-600 dark:bg-white dark:text-black dark:hover:text-white dark:hover:bg-black  dark:hover:border-gray-600  transition-transform duration-500 transform hover:scale-115 cursor-pointer ease-in-out "
               onClick={() => setIsNewTaskOpen(true)}
             >
               Add Task

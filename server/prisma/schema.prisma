@@ -49,9 +49,9 @@ model User {
 model Team {
   id                   Int    @id @default(autoincrement())
   teamName             String
-  projectManagerUserId Int?
+  projectManagerUserId Int
 
-  projectManager User? @relation(name: "ProjectManager", fields: [projectManagerUserId], references: [userId])
+  projectManager User @relation(name: "ProjectManager", fields: [projectManagerUserId], references: [userId])
 
   projectTeams ProjectTeam[]
   user         User[]
@@ -76,14 +76,14 @@ model ProjectTeam {
 }
 
 model Task {
-  id             Int       @id @default(autoincrement())
+  id             Int      @id @default(autoincrement())
   title          String
   description    String?
-  status         String?
+  status         String
   priority       String?
   tags           String?
-  startDate      DateTime?
-  dueDate        DateTime?
+  startDate      DateTime
+  dueDate        DateTime
   points         Int?
   projectId      Int
   authorUserId   Int

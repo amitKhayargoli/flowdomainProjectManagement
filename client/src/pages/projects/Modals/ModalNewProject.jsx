@@ -49,7 +49,7 @@ const ModalNewProject = ({ isOpen, onClose }) => {
   };
 
   const inputStyles =
-    "w-full rounded border focus:outline-none border-gray-300 p-2 shadow-sm dark:border-black dark:bg-gray-700  dark:text-white dark:focus:outline-none";
+    "w-full rounded border focus:outline-none border-gray-300 p-2 shadow-sm dark:border-none dark:bg-gray-700  dark:text-white dark:focus:outline-none";
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} name="Create New Project">
@@ -94,7 +94,7 @@ const ModalNewProject = ({ isOpen, onClose }) => {
 
         <button
           type="submit"
-          className={`focus-offset-2 mt-4 flex w-full justify-center rounded-md border  bg-blue-600 border-transparent bg-blue-primary px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+          className={`focus-offset-2 mt-4 flex w-full justify-center rounded-md border  bg-blue-600 border-transparent  px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
             !isFormValid() || isLoading
               ? "cursor-not-allowed opacity-50"
               : "opacity-100"
