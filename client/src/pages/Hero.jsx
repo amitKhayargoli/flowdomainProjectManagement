@@ -38,7 +38,7 @@ const Hero = () => {
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        viewport={{ once: false, amount: 0.7 }}
+        viewport={{ once: false, amount: 0.5}}
       >
         <div className="px-2 xl:px-50 min-h-screen mt-15">
           <div className="rounded-xl border-gray-800 border-2">

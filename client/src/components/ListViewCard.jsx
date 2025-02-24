@@ -6,13 +6,13 @@ const ListViewCard = ({ task }) => {
   return (
     <div className="mb-3 rounded bg-white p-5 shadow dark:bg-[#1d1f21] dark:text-white">
       {/* Check for attachments */}
-      {task.attachments && task.attachments.length > 0 ? (
+      {task.fileURL ? (
         <div className="mb-4">
           <strong>Attachments</strong>
           <div className="flex-wray flex">
             <img
-              src={`/${task.attachments[0].fileURL}`}
-              alt={task.attachments[0].fileName}
+              src={`${task.fileURL}`}
+              alt={task.fileURL}
               width={400}
               height={200}
               className="mt-2 rounded-md"

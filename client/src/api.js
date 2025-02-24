@@ -1,7 +1,12 @@
 import axios from "axios";
+import {
+  deleteTask,
+  updateTask,
+} from "../../server/controllers/taskController";
 
 const API_BASE_URL = "http://localhost:5000";
 
+const token = localStorage.getItem("token");
 export const api = {
   getProjects: async () => {
     try {
@@ -17,7 +22,10 @@ export const api = {
     try {
       const response = await axios.post(
         `${API_BASE_URL}/projects/create`,
-        projectData
+        projectData,
+        {
+          headers: { Authorization: `Bearer ${token}` }, // Send token
+        }
       );
       return response.data;
     } catch (error) {
@@ -34,6 +42,16 @@ export const api = {
       return response.data;
     } catch (error) {
       console.error("Error fetching tasks:", error);
+      throw error;
+    }
+  },
+
+  getTaskbyId: async (taskId) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/tasks/${taskId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching task by ID:", error);
       throw error;
     }
   },
@@ -62,6 +80,45 @@ export const api = {
       return response.data;
     } catch (error) {
       console.error("Error updating task status:", error);
+      throw error;
+    }
+  },
+
+  updateTask: async (taskId, updatedTaskData) => {
+    try {
+      const response = await axios.put(
+        `${API_BASE_URL}/tasks/${taskId}`,
+        updatedTaskData
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error updating task:", error);
+      throw error;
+    }
+  },
+
+  deleteTask: async (taskId) => {
+    try {
+      await axios.delete(`${API_BASE_URL}/tasks/${taskId}`);
+    } catch (error) {
+      console.error("Error deleting task:", error);
+      throw error;
+    }
+  },
+
+  uploadFile: async (data) => {
+    try {
+      const uploadResponse = await axios.post(
+        "http://localhost:5000/api/file/upload",
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error uploading file:", error);
       throw error;
     }
   },

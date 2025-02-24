@@ -51,23 +51,18 @@ const Login = () => {
           localStorage.setItem("userId", response.data.data.userId);
 
           console.log(response.data.data.role);
+          reset();
           if (response.data.data.role === "user") {
-            navigate("/workspace");
-            toast.success("Logged into Workspace");
+            navigate("/workspace/projects");
           } else if (response.data.data.role === "admin") {
             navigate("/Admin/");
-            toast.success("Logged as Admin");
           }
-        } else {
-          alert("Login failed! Check credentials.");
         }
       })
       .catch((error) => {
-        console.error("Error logging in:", error);
-        alert("Error logging in. Please try again.");
+        toast.error("Login failed! Check credentials");
+        reset();
       });
-
-    reset();
   };
 
   const hoverClassnames =
@@ -144,10 +139,10 @@ const Login = () => {
               OR CONTINUE WITH
             </h1>
 
-            {/* <button className="flex gap-1 items-center justify-center h-12 font-normal text-white w-full md:w-[55%] border-1 border-[#454549] xl:w-[55%] transition-all ease-in-out duration-400 bg-black hover:bg-white hover:text-black !pl-6 text-xl !my-2 rounded-md cursor-pointer">
-              <img src={github} className="w-8 h-8" alt="Github" />
+            <button className="flex gap-1 items-center justify-center h-12 font-normal text-white w-full md:w-[55%] border-1 border-[#454549] xl:w-[55%] transition-all ease-in-out duration-400 bg-black hover:bg-white hover:text-black !pl-6 text-xl !my-2 rounded-md cursor-pointer">
+              <img src={github} className="w-8 h-8 " alt="Github" />
               Github
-            </button> */}
+            </button>
 
             <p className="font-normal text-[16px] text-center xl:w-[40%] mt-4">
               By clicking continue, you agree to our Terms of Service and

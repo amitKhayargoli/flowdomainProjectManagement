@@ -4,20 +4,56 @@ import {
   Grid3X3,
   List,
   LucidePlus,
+  Search,
   Share2,
   Table,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ModalNewProject from "./Modals/ModalNewProject";
 import Header from "../../components/Header";
+import { api } from "../../api";
 
-const ProjectHeader = ({ activeTab, setActiveTab }) => {
+const ProjectHeader = ({ id, activeTab, setActiveTab, project }) => {
+  const [tasks, setTasks] = useState([]);
+  const [filteredTasks, setFilteredTasks] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [isNewProjectOpen, setIsNewProjectOpen] = useState(false);
+
+  const fetchTasks = useCallback(async () => {
+    try {
+      const data = await api.getTasks(id);
+      console.log(data);
+      setTasks(data);
+      setFilteredTasks(data);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    fetchTasks();
+    console.log("Fetched ", tasks);
+  }, [fetchTasks]);
+
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    console.log("Search query", query);
+    setSearchQuery(query);
+
+    if (query === "") {
+      setFilteredTasks(tasks);
+    } else {
+      const filtered = tasks.filter((task) =>
+        task.title.toLowerCase().includes(query)
+      );
+      setFilteredTasks(filtered);
+      console.log("Filtered tasks", filtered);
+    }
+  };
 
   return (
     <div className="px-4 xl:px-6 w-full">
-      {/*Model New Project */}
-
+      {/* Modal New Project */}
       <ModalNewProject
         isOpen={isNewProjectOpen}
         onClose={() => setIsNewProjectOpen(false)}
@@ -25,11 +61,11 @@ const ProjectHeader = ({ activeTab, setActiveTab }) => {
 
       <div className="pb-6 pt-6 lg:pb-4 lg:pt-8">
         <Header
-          name="Domain Expansion"
+          name={`${project}`}
           buttonComponent={
             <button
-              className="flex items-center rounded-md bg-blue-500 px-3 py-3 dark:bg-white dark:text-black dark:hover:text-white dark:hover:bg-black border-white dark:border-black border-hidden border-1 dark:hover:border-gray-600 text-white hover:bg-blue-600 
-              transition-transform duration-500 transform hover:scale-115 cursor-pointer ease-in-out "
+              className="flex items-center rounded-md bg-blue-500 px-3 py-3 dark:bg-white dark:text-black dark:hover:text-white dark:hover:bg-black border-white dark:border-black border-1 dark:hover:border-gray-200 text-white hover:bg-blue-600 
+              transition-transform duration-500 transform hover:scale-110 cursor-pointer ease-in-out"
               onClick={() => setIsNewProjectOpen(true)}
             >
               <LucidePlus className="mr-2 h-5 w-5" /> New Project
@@ -46,41 +82,41 @@ const ProjectHeader = ({ activeTab, setActiveTab }) => {
             icon={<Grid3X3 className="h-5 w-5" />}
             setActiveTab={setActiveTab}
             activeTab={activeTab}
-          ></TabButton>
-
+          />
           <TabButton
             name="List"
             icon={<List className="h-5 w-5" />}
             setActiveTab={setActiveTab}
             activeTab={activeTab}
-          ></TabButton>
-
+          />
           <TabButton
             name="Table"
             icon={<Table className="h-5 w-5" />}
             setActiveTab={setActiveTab}
             activeTab={activeTab}
-          ></TabButton>
+          />
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <button className="text-gray-500 hover:text-gray-600 dark:text-white dark:hover:text-gray-400">
-            <Filter className="h-5 w-5"></Filter>
+            <Filter className="h-5 w-5" />
           </button>
 
           <button className="text-gray-500 hover:text-gray-600 dark:text-white dark:hover:text-gray-400">
-            <Share2 className="h-5 w-5"></Share2>
+            <Share2 className="h-5 w-5" />
           </button>
 
           <div className="relative">
             <input
               type="text"
+              value={searchQuery}
+              onChange={handleSearch}
               placeholder="Search Tasks"
               className="rounded-md border py-1 pl-10 pr-4 focus:outline-none dark:border-white dark:text-white"
             />
-            <Grid3X3 className="absolute left-3 top-2 h-4 w-4 text-gray-400 dark:text-white"></Grid3X3>
+            <Search className="absolute left-3 top-2 h-4 w-4 text-gray-400 dark:text-white" />
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

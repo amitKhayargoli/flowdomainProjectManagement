@@ -39,7 +39,7 @@ const Sidebar = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/projects"); // Adjust the URL if needed
+        const response = await axios.get("http://localhost:5000/projects");
         setProjects(response.data);
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -50,6 +50,7 @@ const Sidebar = () => {
   }, []);
 
   // console.log(projects);
+  console.log("Projects fetched", projects);
 
   const sidebarClassNames = `fixed flex flex-col h-[100%] justify-between shadow-xl transition-all duration-300 h-full z-40 dark:bg-black overflow-y-auto bg-white 
   ${isSidebarCollapsed ? "w-0 hidden" : "w-64"}
@@ -107,7 +108,7 @@ const Sidebar = () => {
         <nav className="z-10 w-full">
           <SidebarLink icon={HomeIcon} label="Projects" href="projects" />
           {/* <SidebarLink icon={Briefcase} label="Timeline" href="timeline" /> */}
-          <SidebarLink icon={Search} label="Search" href="search" />
+          {/* <SidebarLink icon={Search} label="Search" href="search" />   */}
 
           <SidebarLink icon={Settings} label="Settings" href="settings" />
           <SidebarLink icon={User} label="Users" href="users" />

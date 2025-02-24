@@ -15,7 +15,7 @@ const validationSchema = Yup.object().shape({
     .required("Email is required"),
   username: Yup.string()
     .required("Username is required")
-    .matches(/^[a-zA-Z0-9_ ]{4,15}$/, "Username must be 4-15 characters long"),
+    .matches(/^[a-zA-Z0-9_]{4,15}$/, "Username must be 4-15 characters long"),
   password: Yup.string()
     .required("Password is required")
     .min(6, "Password must be at least 6 characters long"),
@@ -150,10 +150,10 @@ const Signup = () => {
               OR CONTINUE WITH
             </h1>
 
-            {/* <button className="flex gap-1 items-center justify-center h-12 font-normal text-white w-full md:w-[55%] border-1 border-[#454549]  xl:w-[55%] transition-all ease-in-out duration-400 bg-black hover:bg-white hover:text-black !pl-6 text-xl !my-2 rounded-md cursor-pointer">
-              <img src={github} className="w-8 h-8" alt="" />
+            <button className="flex gap-1 items-center justify-center h-12 font-normal text-white w-full md:w-[55%] border-1 border-[#454549]  xl:w-[55%] transition-all ease-in-out duration-400 bg-black hover:bg-white hover:text-black !pl-6 text-xl !my-2 rounded-md cursor-pointer">
+              <img src={github} className="w-8 h-8 " alt="" />
               Github
-            </button> */}
+            </button>
 
             <p className="font-normal text-[16px] text-center  xl:w-[40%] mt-4">
               By clicking continue, you agree to our Terms of Service and

@@ -41,10 +41,31 @@ const Changelog = () => {
       description: "Created the initial version of BoardView Component",
       features: ["Added Board View Feature"],
     },
+
+    {
+      version: "v1.0.2",
+      date: "Jan 16 2025",
+      description: "Created the initial versions of ListView and TableView",
+      features: ["Added Tasks to ListView", "Added Tasks to TableView"],
+    },
+
+    {
+      version: "v1.0.3",
+      date: "Jan 18, 2025",
+      description: "Improved BoardView",
+      features: ["Added the Drag and Drop to update task status"],
+    },
+
+    {
+      version: "v1.0.4",
+      date: "Jan 25, 2025",
+      description: "Increased BoardView functionality",
+      features: ["Added update task details"],
+    },
   ];
 
   return (
-    <div className="h-full w-full bg-black">
+    <div className="h-full w-full bg-black flex flex-col">
       <HomeNav></HomeNav>
 
       <h1 className="text-white text-center text-3xl md:text-6xl font-bold mt-10">

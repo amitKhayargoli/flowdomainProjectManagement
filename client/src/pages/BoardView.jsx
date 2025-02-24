@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { motion } from "framer-motion";
 
 import {
   EllipsisVertical,
@@ -22,24 +23,26 @@ import {
 } from "../../../server/controllers/taskController";
 import axios from "axios";
 import { api } from "../api";
+import ModalEditTask from "./projects/Modals/ModalEditTask";
 
 const taskStatus = ["To do", "Work In Progress", "Review", "Completed"];
 
 const BoardView = ({ id, setIsNewTaskOpen }) => {
   const [tasks, setTasks] = useState(null);
 
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
       const data = await api.getTasks(id);
       setTasks(data);
     } catch (error) {
       console.error("Error fetching tasks:", error);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchTasks();
-  }, [id]);
+    console.log("Fetched tasks", tasks);
+  }, [fetchTasks]);
 
   const moveTask = async (taskId, status) => {
     try {
@@ -50,23 +53,37 @@ const BoardView = ({ id, setIsNewTaskOpen }) => {
     }
   };
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {taskStatus.map((status) => (
-          <TaskColumn
-            key={status}
-            status={status}
-            tasks={tasks || []}
-            moveTask={moveTask}
-            setIsNewTaskOpen={setIsNewTaskOpen}
-          />
-        ))}
-      </div>
-    </DndProvider>
+    <motion.div
+      className=""
+      initial={{ opacity: 1, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 2 }}
+    >
+      <DndProvider backend={HTML5Backend}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 p-5">
+          {taskStatus.map((status) => (
+            <TaskColumn
+              fetchTasks={fetchTasks}
+              key={status}
+              status={status}
+              tasks={tasks || []}
+              moveTask={moveTask}
+              setIsNewTaskOpen={setIsNewTaskOpen}
+            />
+          ))}
+        </div>
+      </DndProvider>
+    </motion.div>
   );
 };
 
-const TaskColumn = ({ status, tasks, moveTask, setIsNewTaskOpen }) => {
+const TaskColumn = ({
+  status,
+  tasks,
+  moveTask,
+  setIsNewTaskOpen,
+  fetchTasks,
+}) => {
   const [{ isOver }, drop] = useDrop(() => ({
     accept: "task",
     drop: (item) => moveTask(item.id, status),
@@ -89,7 +106,7 @@ const TaskColumn = ({ status, tasks, moveTask, setIsNewTaskOpen }) => {
       ref={(instance) => {
         drop(instance);
       }}
-      className={`sl:py-4 rounded-lg py-2 xl:px-2 ${
+      className={`sl:py-4 rounded-lg py-2 xl:px-2 hover:cursor-pointer transition-transform duration-500 transform hover:scale-105${
         isOver ? "bg-blue-100 dark:bg-neutral-950" : ""
       }`}
     >
@@ -127,13 +144,13 @@ const TaskColumn = ({ status, tasks, moveTask, setIsNewTaskOpen }) => {
       {tasks
         .filter((task) => task.status?.toLowerCase() === status?.toLowerCase())
         .map((task) => (
-          <Task key={task.id} task={task} />
+          <Task fetchTasks={fetchTasks} key={task.id} task={task} />
         ))}
     </div>
   );
 };
 
-const Task = ({ task }) => {
+const Task = ({ task, fetchTasks }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "task",
     item: { id: task.id },
@@ -141,6 +158,29 @@ const Task = ({ task }) => {
       isDragging: !!monitor.isDragging(),
     }),
   }));
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [taskById, setTaskById] = useState(null);
+  const openModal = () => {
+    console.log(task.id);
+    setIsModalOpen(true);
+    const getTaskById = async () => {
+      try {
+        const response = await api.getTaskbyId(task.id);
+
+        console.log(response);
+        setTaskById(response);
+      } catch (err) {
+        console.error("Error fetching task by ID:", err);
+      }
+    };
+
+    getTaskById();
+  };
+  // console.log(taskById);
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   const taskTagsSplit = task.tags ? task.tags.split(",") : [];
 
@@ -174,103 +214,108 @@ const Task = ({ task }) => {
   };
 
   return (
-    <div
-      ref={(instance) => {
-        drag(instance);
-      }}
-      className={`mb-4 rounded-md bg-white shadow dark:bg-[#1d1f21] ${
-        isDragging ? "opacity-50" : "opacity-100"
-      }`}
-    >
-      {task.attachments && task.attachments.length > 0 && (
-        <img
-          src={`/${task.attachments[0].fileURL}`}
-          alt={task.attachments[0].fileName}
-          width={400}
-          height={200}
-          className="h-auto w-full rounded-t-md"
-        />
-      )}
+    <>
+      <ModalEditTask
+        fetchTasks={fetchTasks}
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        task={taskById}
+      ></ModalEditTask>
 
-      <div className="p-4 md:p-6">
-        <div className="flex items-start justify-between">
-          <div className="flex flex-1 flex-wrap items-center gap-2">
-            {task.priority && <PriorityTag priority={task.priority} />}
+      <div
+        onClick={openModal}
+        ref={(instance) => {
+          drag(instance);
+        }}
+        className={`mb-4 rounded-md bg-white shadow dark:bg-[#1d1f21] ${
+          isDragging ? "opacity-50" : "opacity-100"
+        }`}
+      >
+        {task.fileURL && (
+          <img
+            src={`${task.fileURL}`}
+            alt={task.fileURL}
+            width={400}
+            height={200}
+            className="h-auto w-full rounded-t-md"
+          />
+        )}
 
-            <div className="flex gap-2">
-              {taskTagsSplit.map((tag) => (
-                <div
-                  key={tag}
-                  className="rounded-full bg-blue-400 px-2 py-1 text-xs"
-                >
-                  {tag}
-                </div>
-              ))}
+        <div className="p-4 md:p-6">
+          <div className="flex items-start justify-between">
+            <div className="flex flex-1 flex-wrap items-center gap-2">
+              {task.priority && <PriorityTag priority={task.priority} />}
+
+              <div className="flex gap-2">
+                {taskTagsSplit.map((tag) => (
+                  <div
+                    key={tag}
+                    className="rounded-full bg-blue-400 px-2 py-1 text-xs"
+                  >
+                    {tag}
+                  </div>
+                ))}
+              </div>
             </div>
+
+            <button className="flex h-6 w-4 flex-shrink-0 items-center justify-center dark:text-neutral-500">
+              <EllipsisVertical size={30} />
+            </button>
           </div>
 
-          <button className="flex h-6 w-4 flex-shrink-0 items-center justify-center dark:text-neutral-500">
-            <EllipsisVertical size={30} />
-          </button>
-        </div>
-
-        <div className="my-5 flex justify-between px-1">
-          <h4 className="text-md font-bold dark:text-white">{task.title}</h4>
-          {typeof task.points === "number" && (
-            <div className="text-xs font-semibold dark:text-white">
-              {task.points} pts
-            </div>
-          )}
-        </div>
-
-        <div className="text-xs text-gray-500 dark:text-neutral-500">
-          {formattedStartDate && <span>{formattedStartDate} - </span>}
-          {formattedDueDate && <span>{formattedDueDate}</span>}
-        </div>
-
-        <div className="text-sm text-gray-600 dark:text-neutral-500">
-          {task.description}
-        </div>
-
-        <div className="mt-4 border-t border-gray-200 dark:border-gray-500"></div>
-
-        {/* USERS */}
-
-        <div className="mt-3 flex items-center justify-between">
-          <div className="flex -space-x-[6px] overflow-hidden">
-            {task.assignee && (
-              <img
-                key={task.assignee.userId}
-                src={`/${task.assignee.profilePictureUrl}`}
-                alt={task.assignee.username}
-                width={30}
-                height={30}
-                className="h-8 w-8 rounded-full border-2 border-white object-cover dark:border-[#1d1f21]"
-              />
-            )}
-
-            {task.author && (
-              <img
-                key={task.author.userId}
-                src={`/${task.author.profilePictureUrl}`}
-                alt={task.author.username}
-                width={30}
-                height={30}
-                className="h-8 w-8 rounded-full border-2 border-white object-cover dark:border-[#1d1f21]"
-              />
-            )}
+          <div className="my-5 flex justify-between px-1">
+            <h4 className="text-md font-bold dark:text-white">{task.title}</h4>
           </div>
 
-          <div className="flex items-center text-gray-500 dark:text-white">
-            <MessageSquareQuoteIcon size={20}>
-              <span className="dark:text-neutral-40 ml-1 text-sm">
-                {numberOfComments}
-              </span>
-            </MessageSquareQuoteIcon>
+          <div className="text-xs text-gray-500 dark:text-neutral-500">
+            {formattedStartDate && <span>{formattedStartDate} - </span>}
+            {formattedDueDate && <span>{formattedDueDate}</span>}
+          </div>
+
+          <div className="text-sm text-gray-600 dark:text-neutral-500">
+            {task.description}
+          </div>
+
+          <div className="mt-4 border-t border-gray-200 dark:border-gray-500"></div>
+
+          {/* USERS */}
+
+          <div className="mt-3 flex items-center justify-between">
+            <div className="flex -space-x-[6px] overflow-hidden">
+              {task.assignee && (
+                <img
+                  key={task.assignee.userId}
+                  src={`/${task.assignee.profilePictureUrl}`}
+                  alt={task.assignee.username}
+                  width={30}
+                  height={30}
+                  className="h-8 w-8 rounded-full border-2 border-white object-cover dark:border-[#1d1f21]"
+                />
+              )}
+
+              {task.author && (
+                <img
+                  key={task.author.userId}
+                  src={`/${task.author.profilePictureUrl}`}
+                  alt={task.author.username}
+                  width={30}
+                  height={30}
+                  className="h-8 w-8 rounded-full border-2 border-white object-cover dark:border-[#1d1f21]"
+                />
+              )}
+            </div>
+
+            <div className="flex items-center text-gray-500 dark:text-white">
+              <MessageSquareQuoteIcon size={20}>
+                <span className="dark:text-neutral-40 ml-1 text-sm">
+                  {numberOfComments}
+                </span>
+              </MessageSquareQuoteIcon>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

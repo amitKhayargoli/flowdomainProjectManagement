@@ -16,7 +16,7 @@ const columns = [
   {
     field: "title",
     headerName: "Title",
-    width: 100,
+    width: 180,
   },
   {
     field: "description",
@@ -66,20 +66,6 @@ const columns = [
     headerName: "Due Date",
     width: 130,
   },
-  {
-    field: "author",
-    headerName: "Author",
-    width: 100,
-    renderCell: (params) =>
-      (params.value && params.value.username) || "Username",
-  },
-  {
-    field: "assignee",
-    headerName: "Assignee",
-    width: 100,
-    renderCell: (params) =>
-      (params.value && params.value.username) || "Unassigned",
-  },
 ];
 
 const TableView = ({ id, setIsNewTaskOpen }) => {
@@ -106,7 +92,7 @@ const TableView = ({ id, setIsNewTaskOpen }) => {
           name="TableView"
           buttonComponent={
             <button
-              className="flex items-center rounded-sm bg-blue-500 px-3 py-2 text-white hover:bg-blue-600 dark:bg-white dark:text-black dark:hover:text-white dark:hover:bg-black dark:hover:border-1 dark:hover:border-gray-600 cursor-pointer transition duration-300 ease-in"
+              className="flex items-center rounded-sm bg-blue-500 px-3 py-2 text-white hover:bg-blue-600 dark:bg-white dark:text-black dark:hover:text-white dark:hover:bg-black  transition-transform duration-500 transform hover:scale-115 cursor-pointer ease-in-out  dark:hover:border-gray-600 "
               onClick={() => setIsNewTaskOpen(true)}
             >
               Add Task

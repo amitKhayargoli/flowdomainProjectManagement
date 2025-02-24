@@ -10,12 +10,16 @@ import authRouter from "./routes/authRoute.js";
 import uploadRouter from "./routes/uploadRoutes.js";
 import userRouter from "./routes/userRoute.js";
 import { authenticateToken } from "./middleware/token-middleware.js";
+import { createUploadsFolder } from "./security/helper.js";
 
 dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
+
+app.use("/uploads", express.static("uploads"));
+createUploadsFolder();
 app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -40,12 +44,6 @@ app.use("/api/file", uploadRouter);
 app.use((req, res, next) => {
   console.log(`Request: ${req.method} ${req.path}`);
   next();
-});
-
-app.get("/api/projects/:id", (req, res) => {
-  const projectId = req.params.id;
-  const projectData = { id: projectId, name: `Project ${projectId}` }; // Replace this with actual data fetching
-  res.json(projectData);
 });
 
 // Server

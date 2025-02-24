@@ -5,6 +5,7 @@ import { formatISO } from "date-fns";
 import { api } from "../../../api";
 import ReactDOM from "react-dom";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 export const Priority = {
   High: "High",
@@ -14,6 +15,9 @@ export const Priority = {
 };
 
 const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [fileName, setFileName] = useState("");
+  const [fileLabel, setFileLabel] = useState("Add an attachment");
   const { register, handleSubmit, setValue, reset } = useForm();
 
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -40,9 +44,8 @@ const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
     }
   }, [task, setValue]);
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     console.log("Data submitted:", data);
-    // Add your logic to update the task here
 
     const formattedStartDate = formatISO(new Date(data.startDate), {
       representation: "complete",
@@ -52,11 +55,45 @@ const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
       representation: "complete",
     });
 
+    let imageUrl = "";
+
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      try {
+        const uploadResponse = await axios.post(
+          "http://localhost:5000/api/file/upload",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        console.log("Upload Response:", uploadResponse.data);
+
+        if (uploadResponse.data?.file?.path) {
+          imageUrl = `http://localhost:5000/${uploadResponse.data.file.path}`;
+        } else {
+          console.error("File upload failed, no path received");
+        }
+      } catch (err) {
+        console.error("Error uploading file:", err);
+        toast.error("Failed to upload file!");
+        return;
+      }
+    }
+
     const updatedTaskData = {
       ...data,
       startDate: formattedStartDate,
       dueDate: formattedEndDate,
+      fileURL: imageUrl,
     };
+
+    console.log("Updated Task Data:", updatedTaskData);
 
     api
       .updateTask(task.id, updatedTaskData)
@@ -74,14 +111,22 @@ const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
 
   const handleDeleteTask = () => {
     api.deleteTask(task.id).then((response) => {
-      toast.success("Task deleted successfully!");
       fetchTasks();
       onClose();
     });
   };
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setFileName(file.name);
+      setFileLabel("Image Uploaded...");
+    }
+  };
+
   const selectStyles =
-    "mb-4 text-lg text-gray-600 block w-full rounded border border-gray-300 focus:outline-none px-3 dark:border-none py-2  dark:bg-gray-700 dark:text-white dark:focus:outline-none";
+    "mb-4 text-md text-gray-600 block w-full rounded border border-gray-300 focus:outline-none px-3 dark:border-none py-2  dark:bg-gray-700 dark:text-white dark:focus:outline-none";
 
   const inputStyles =
     "w-full rounded border mt-1  mb-5 focus:outline-none border-gray-300 p-2 shadow-sm dark:border-none dark:bg-gray-700 dark:text-white dark:focus:outline-none";
@@ -105,7 +150,7 @@ const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
                 <div className="flex">
                   <textarea
                     {...register("description")}
-                    className={`rounded-sm text-lg ${inputStyles}`}
+                    className={`rounded-sm text-md ${inputStyles}`}
                     placeholder="Add a detailed description"
                   />
                 </div>
@@ -131,7 +176,7 @@ const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
                   <input
                     {...register("comment")}
                     type="text"
-                    className={`h-10 p-2 text-lg flex-1 ${inputStyles}`}
+                    className={`h-10 p-2 text-md flex-1 ${inputStyles}`}
                     maxLength={250}
                     placeholder="Write a comment..."
                   />
@@ -161,6 +206,7 @@ const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
                     type="file"
                     id="file-upload"
                     name="file-upload"
+                    onChange={handleImageUpload}
                     className="w-full dark:bg-gray-900 text-gray-500 font-medium text-base bg-gray-100 file:cursor-pointer cursor-pointer file:border-0 file:py-2.5 file:px-4 file:mr-4 file:bg-gray-800 file:hover:bg-gray-700 file:text-white"
                   />
                 </div>

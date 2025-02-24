@@ -1,24 +1,66 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { formatISO } from "date-fns";
 import Modal from "../../../components/Modal";
 import { createProject } from "../../../../../server/controllers/projectController";
 import { api } from "../../../api";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const ModalNewProject = ({ isOpen, onClose }) => {
   console.log("Modal isOpen state:", isOpen);
-
-  if (!isOpen) return null;
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [fileName, setFileName] = useState("");
+  const [fileLabel, setFileLabel] = useState("Upload a project cover");
 
   const [projectName, setProjectName] = useState("");
   const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Add the isLoading state
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found in localStorage");
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/auth/init",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setCurrentUser(response.data.data);
+      } catch (error) {
+        console.error("Error fetching current user:", error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
+
+  console.log("Current User", currentUser);
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setFileName(file.name);
+      setFileLabel("Image Uploaded...");
+    }
+  };
 
   const handleSubmit = async () => {
     if (!projectName || !startDate || !endDate) return;
 
-    setIsLoading(true); // Set loading state to true
+    // setIsLoading(true); // Set loading state to true
 
     const formattedStartDate = formatISO(new Date(startDate), {
       representation: "complete",
@@ -29,14 +71,38 @@ const ModalNewProject = ({ isOpen, onClose }) => {
     });
 
     try {
+      let imageUrl = "";
+
+      if (selectedFile) {
+        const data = new FormData();
+        data.append("file", selectedFile);
+
+        const uploadResponse = await axios.post(
+          "http://localhost:5000/api/file/upload",
+          data,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        console.log("Upload Response:", uploadResponse.data);
+        imageUrl = "http://localhost:5000/" + uploadResponse.data.file.path;
+
+        if (!imageUrl) {
+          throw new Error("File URL is missing from response");
+        }
+      }
       await api.createProject({
         name: projectName,
         description,
         startDate: formattedStartDate,
         endDate: formattedEndDate,
+        coverURL: imageUrl,
       });
       setIsLoading(false); // Set loading state to false
-      toastify.success("Project created successfully");
+
       onClose(); // Close the modal after creating the project
     } catch (error) {
       console.error("Error creating project:", error);
@@ -49,8 +115,9 @@ const ModalNewProject = ({ isOpen, onClose }) => {
   };
 
   const inputStyles =
-    "w-full rounded border focus:outline-none border-gray-300 p-2 shadow-sm dark:border-black dark:bg-gray-700  dark:text-white dark:focus:outline-none";
+    "w-full rounded border focus:outline-none border-gray-300 p-2 shadow-sm dark:border-none dark:bg-gray-700  dark:text-white dark:focus:outline-none";
 
+  if (!isOpen) return null;
   return (
     <Modal isOpen={isOpen} onClose={onClose} name="Create New Project">
       <form
@@ -91,15 +158,30 @@ const ModalNewProject = ({ isOpen, onClose }) => {
             onChange={(e) => setEndDate(e.target.value)}
           />
         </div>
+        <div className="w-full">
+          <label
+            htmlFor="file-upload"
+            className="w-full flex items-center justify-center dark:bg-[#364153] bg-gray-100 text-dark dark:text-white font-medium text-base py-2.5 px-4 rounded cursor-pointer file:hidden"
+          >
+            {fileLabel}
+          </label>
+          <input
+            id="file-upload"
+            className="hidden"
+            type="file"
+            name="file-upload"
+            onChange={handleImageUpload}
+          />
+        </div>
 
         <button
           type="submit"
-          className={`focus-offset-2 mt-4 flex w-full justify-center rounded-md border  bg-blue-600 border-transparent bg-blue-primary px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+          className={`focus-offset-2 mt-4 flex w-full justify-center rounded-md border  bg-blue-600 border-transparent  px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
             !isFormValid() || isLoading
               ? "cursor-not-allowed opacity-50"
               : "opacity-100"
           }`}
-          disabled={!isFormValid() || isLoading}
+          disabled={!isFormValid()}
         >
           {isLoading ? "Creating" : "Create Project"}
         </button>
