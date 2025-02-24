@@ -42,6 +42,7 @@ const ModalNewTask = ({ isOpen, onClose, id }) => {
   };
 
   const handleSubmit = async () => {
+    const token = localStorage.getItem("token");
     if (!title) return;
 
     const formattedStartDate = formatISO(new Date(startDate), {
@@ -65,6 +66,7 @@ const ModalNewTask = ({ isOpen, onClose, id }) => {
           {
             headers: {
               "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -89,6 +91,17 @@ const ModalNewTask = ({ isOpen, onClose, id }) => {
       });
 
       console.log(status);
+      setTitle("");
+      setDescription("");
+      setStatus(Status.ToDo);
+      setPriority(Priority.Medium);
+      setTags("");
+      setStartDate("");
+      setDueDate("");
+      setSelectedFile(null);
+      setFileName("");
+      setFileLabel("Upload an attachment");
+
       setIsLoading(false); // Set loading state to false
       onClose(); // Close the modal after creating the task
     } catch (error) {

@@ -62,12 +62,14 @@ const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
       formData.append("file", selectedFile);
 
       try {
+        const token = localStorage.getItem("token");
         const uploadResponse = await axios.post(
           "http://localhost:5000/api/file/upload",
           formData,
           {
             headers: {
               "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -99,7 +101,7 @@ const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
       .updateTask(task.id, updatedTaskData)
       .then((response) => {
         console.log("Task updated:", response);
-        fetchTasks();
+
         reset();
         onClose();
       })
@@ -111,7 +113,6 @@ const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
 
   const handleDeleteTask = () => {
     api.deleteTask(task.id).then((response) => {
-      fetchTasks();
       onClose();
     });
   };
@@ -156,32 +157,22 @@ const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
                 </div>
               </div>
 
-              <select
-                {...register("priority")}
-                required
-                className={selectStyles}
-              >
-                <option value="">Select Priority</option>
-                <option value={Priority.High}>High</option>
-                <option value={Priority.Medium}>Medium</option>
-                <option value={Priority.Low}>Low</option>
-                <option value={Priority.Backlog}>Backlog</option>
-              </select>
+              <div className="flex flex-col gap-1">
+                <h1 className="dark:text-white text-lg ml-2">Priority</h1>
+                <select
+                  {...register("priority")}
+                  required
+                  className={selectStyles}
+                >
+                  <option value="">Select Priority</option>
+                  <option value={Priority.High}>High</option>
+                  <option value={Priority.Medium}>Medium</option>
+                  <option value={Priority.Low}>Low</option>
+                  <option value={Priority.Backlog}>Backlog</option>
+                </select>
+              </div>
 
               <div className="flex flex-col">
-                <div className="flex items-center">
-                  <h1 className="dark:text-white text-lg ml-2">Comment</h1>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    {...register("comment")}
-                    type="text"
-                    className={`h-10 p-2 text-md flex-1 ${inputStyles}`}
-                    maxLength={250}
-                    placeholder="Write a comment..."
-                  />
-                </div>
-
                 <div className="sm-gap-2">
                   <h1 className="dark:text-white text-lg ml-2">Start Date</h1>
                   <div>

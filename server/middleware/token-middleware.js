@@ -32,7 +32,6 @@ export function authenticateToken(req, res, next) {
       return res.status(403).send("Invalid or expired token.");
     }
 
-    console.log("Decoded token:", decoded); // Ensure decoded contains user info
     req.user = decoded; // Attach decoded token info to the request object
     req.userId = decoded.userId;
     next(); // Proceed to the next middleware/handler

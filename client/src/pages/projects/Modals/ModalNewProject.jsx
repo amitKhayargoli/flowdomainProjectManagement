@@ -58,6 +58,7 @@ const ModalNewProject = ({ isOpen, onClose }) => {
   };
 
   const handleSubmit = async () => {
+    const token = localStorage.getItem("token");
     if (!projectName || !startDate || !endDate) return;
 
     // setIsLoading(true); // Set loading state to true
@@ -83,6 +84,7 @@ const ModalNewProject = ({ isOpen, onClose }) => {
           {
             headers: {
               "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -101,6 +103,14 @@ const ModalNewProject = ({ isOpen, onClose }) => {
         endDate: formattedEndDate,
         coverURL: imageUrl,
       });
+
+      setProjectName("");
+      setDescription("");
+      setStartDate("");
+      setEndDate("");
+      setSelectedFile(null);
+      setFileName("");
+      setFileLabel("Upload a project cover");
       setIsLoading(false); // Set loading state to false
 
       onClose(); // Close the modal after creating the project

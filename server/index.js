@@ -11,6 +11,7 @@ import uploadRouter from "./routes/uploadRoutes.js";
 import userRouter from "./routes/userRoute.js";
 import { authenticateToken } from "./middleware/token-middleware.js";
 import { createUploadsFolder } from "./security/helper.js";
+import inviteRouter from "./routes/inviteRoute.js";
 
 dotenv.config();
 const app = express();
@@ -40,6 +41,7 @@ app.use("/api/auth", authRouter);
 app.use("/projects", projectRoutes);
 app.use("/tasks", taskRoutes);
 app.use("/api/file", uploadRouter);
+app.use("/invite", inviteRouter);
 
 app.use((req, res, next) => {
   console.log(`Request: ${req.method} ${req.path}`);

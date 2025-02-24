@@ -5,16 +5,10 @@ import { motion } from "framer-motion";
 
 import {
   EllipsisVertical,
-  MessageCircle,
-  MessageCircleHeart,
-  MessageSquare,
-  MessageSquareCode,
-  MessageSquareDashedIcon,
-  MessageSquareDiff,
-  MessageSquareDot,
-  MessageSquareHeartIcon,
+  Filter,
   MessageSquareQuoteIcon,
   Plus,
+  Search,
 } from "lucide-react";
 import { format } from "date-fns";
 import {
@@ -28,7 +22,11 @@ import ModalEditTask from "./projects/Modals/ModalEditTask";
 const taskStatus = ["To do", "Work In Progress", "Review", "Completed"];
 
 const BoardView = ({ id, setIsNewTaskOpen }) => {
-  const [tasks, setTasks] = useState(null);
+  const [tasks, setTasks] = useState([]);
+  const [filteredTasks, setFilteredTasks] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState(null);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const fetchTasks = useCallback(async () => {
     try {
@@ -41,8 +39,32 @@ const BoardView = ({ id, setIsNewTaskOpen }) => {
 
   useEffect(() => {
     fetchTasks();
-    console.log("Fetched tasks", tasks);
+
+    // const fetchData = setInterval(() => {
+    //   fetchTasks();
+    // }, 500);
+
+    // return () => clearInterval(fetchData);
   }, [fetchTasks]);
+
+  useEffect(() => {
+    const filtered =
+      priorityFilter === null
+        ? tasks
+        : tasks.filter((task) => task.priority === priorityFilter);
+
+    setFilteredTasks(filtered);
+  }, [tasks, priorityFilter]);
+
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+
+    const filtered = tasks.filter((task) =>
+      task.title.toLowerCase().includes(query)
+    );
+    setFilteredTasks(filtered);
+  };
 
   const moveTask = async (taskId, status) => {
     try {
@@ -52,28 +74,81 @@ const BoardView = ({ id, setIsNewTaskOpen }) => {
       console.error("Error updating task status:", error);
     }
   };
+
   return (
-    <motion.div
-      className=""
-      initial={{ opacity: 1, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 2 }}
-    >
-      <DndProvider backend={HTML5Backend}>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 p-5">
-          {taskStatus.map((status) => (
-            <TaskColumn
-              fetchTasks={fetchTasks}
-              key={status}
-              status={status}
-              tasks={tasks || []}
-              moveTask={moveTask}
-              setIsNewTaskOpen={setIsNewTaskOpen}
-            />
-          ))}
+    <>
+      <div className="px-4 xl:px-8 mb-6 flex w-full h-6 items-center justify-between">
+        <div>
+          <h1 className="mt-15 text-2xl dark:text-white font-bold">
+            BoardView
+          </h1>
         </div>
-      </DndProvider>
-    </motion.div>
+
+        <div className="flex items-center gap-2 mt-15">
+          {isFilterOpen && (
+            <div className="relative top-25 left-20 z-100 bg-white dark:text-white dark:bg-[#1d1f21] p-2 rounded-lg shadow-md mt-2">
+              <ul>
+                {["High", "Medium", "Low", "Backlog"].map((priority) => (
+                  <li
+                    key={priority}
+                    className="cursor-pointer p-1 hover:bg-gray-200 dark:hover:bg-[#2d2d2d] rounded"
+                    onClick={() => {
+                      setPriorityFilter(priority);
+                      setIsFilterOpen(false);
+                    }}
+                  >
+                    {priority}
+                  </li>
+                ))}
+                <li
+                  className="cursor-pointer p-1 hover:bg-gray-200 dark:hover:bg-[#2d2d2d] rounded"
+                  onClick={() => setPriorityFilter(null)}
+                >
+                  Reset Filter
+                </li>
+              </ul>
+            </div>
+          )}
+          <button
+            className="text-gray-500 hover:text-gray-600 dark:text-white dark:hover:text-gray-400"
+            onClick={() => setIsFilterOpen(!isFilterOpen)} // Toggle filter menu
+          >
+            <Filter className="h-5 w-5" />
+          </button>
+
+          <div className="relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={handleSearch}
+              placeholder="Search Tasks"
+              className="rounded-md border py-1 pl-10 pr-4 focus:outline-none dark:border-white dark:text-white"
+            />
+            <Search className="absolute left-3 top-2 h-4 w-4 text-gray-400 dark:text-white" />
+          </div>
+        </div>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 1, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 2 }}
+      >
+        <DndProvider backend={HTML5Backend}>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 p-5">
+            {taskStatus.map((status) => (
+              <TaskColumn
+                key={status}
+                status={status}
+                tasks={filteredTasks}
+                moveTask={moveTask}
+                setIsNewTaskOpen={setIsNewTaskOpen}
+              />
+            ))}
+          </div>
+        </DndProvider>
+      </motion.div>
+    </>
   );
 };
 

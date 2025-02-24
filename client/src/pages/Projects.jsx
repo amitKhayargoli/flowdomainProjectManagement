@@ -14,9 +14,20 @@ const Projects = () => {
   const navigate = useNavigate();
 
   const fetchProjects = async () => {
+    const token = localStorage.getItem("token"); // Get the token from localStorage
+
+    if (!token) {
+      console.error("Authorization token is missing.");
+      return;
+    }
+
     try {
-      const response = await axios.get("http://localhost:5000/projects");
-      setProjects(response.data);
+      const response = await axios.get("http://localhost:5000/projects", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        },
+      });
+      setProjects(response.data); // Set the fetched projects data
     } catch (error) {
       console.error("Error fetching projects:", error);
     }
@@ -54,7 +65,7 @@ const Projects = () => {
               className="flex items-center rounded-md bg-blue-500 px-3 py-3 dark:bg-white dark:text-black dark:hover:text-white dark:hover:bg-black border-white dark:border-black border-1 dark:hover:border-gray-600 text-white hover:bg-blue-600 transition-transform duration-500 transform hover:scale-115 cursor-pointer ease-in-out"
               onClick={() => setIsNewProjectOpen(true)}
             >
-              <LucidePlus className="mr-2 h-5 w-5" /> New Project
+              <LucidePlus className=" h-5 w-5" /> New Project
             </button>
           </div>
         </div>

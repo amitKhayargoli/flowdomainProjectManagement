@@ -14,6 +14,8 @@ import Projects from "./pages/Projects";
 import ProtectedRoute from "./ProtectedRoute";
 import Changelog from "./pages/Changelog";
 import AdminPage from "./pages/Admin/AdminPage";
+import JoinProject from "./pages/JoinProject";
+import Invite from "./pages/invite";
 
 function App() {
   return (
@@ -24,6 +26,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/" element={<Hero />} />
           <Route path="/changelog" element={<Changelog />} />
+          <Route path="/invite" element={<Invite />} />
 
           <Route element={<ProtectedRoute roleRequired={"user"} />}>
             <Route path="/workspace" element={<DashboardLayout />}>
