@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "rhel-openssl-3.0.x"]
@@ -20,27 +14,26 @@ enum Role {
 }
 
 model User {
-  userId   Int    @id @default(autoincrement())
-  username String
-  email    String @unique
-  password String
-  role     Role   @default(user)
-
+  userId            Int           @id @default(autoincrement())
+  username          String
+  email             String        @unique
+  password          String
+  role              Role          @default(user)
   profilePictureUrl String?
-
-  comments     Comment[]
-  projectTeams ProjectTeam[]
+  comments          Comment[]
+  projectTeams      ProjectTeam[]
 }
 
 model Project {
-  id           Int           @id @default(autoincrement())
-  name         String
-  description  String?
-  startDate    DateTime?
-  endDate      DateTime?
-  tasks        Task[]
-  coverURL     String?
-  projectTeams ProjectTeam[]
+  id             Int             @id @default(autoincrement())
+  name           String
+  description    String?
+  startDate      DateTime?
+  endDate        DateTime?
+  tasks          Task[]
+  coverURL       String?
+  projectTeams   ProjectTeam[]
+  projectInvites ProjectInvite[]
 }
 
 model ProjectTeam {
@@ -51,21 +44,27 @@ model ProjectTeam {
   project   Project @relation(fields: [projectId], references: [id])
 }
 
+model ProjectInvite {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  projectId Int
+  project   Project  @relation(fields: [projectId], references: [id])
+  expiresAt DateTime
+}
+
 model Task {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   title       String
   description String?
-  status      String   @default("To do")
+  status      String    @default("To do")
   priority    String?
   tags        String?
   startDate   DateTime
   dueDate     DateTime
   projectId   Int
   fileURL     String?
-
-  project Project @relation(fields: [projectId], references: [id])
-
-  comments Comment[]
+  project     Project   @relation(fields: [projectId], references: [id])
+  comments    Comment[]
 }
 
 model Comment {
@@ -73,7 +72,6 @@ model Comment {
   text   String
   taskId Int
   userId Int
-
-  task Task @relation(fields: [taskId], references: [id])
-  user User @relation(fields: [userId], references: [userId])
+  task   Task   @relation(fields: [taskId], references: [id])
+  user   User   @relation(fields: [userId], references: [userId])
 }

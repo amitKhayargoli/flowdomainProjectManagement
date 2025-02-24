@@ -94,6 +94,10 @@ export const getProjectbyId = async (req, res) => {
   try {
     const project = await prisma.project.findUnique({
       where: { id: parseInt(id) },
+      include: {
+        projectTeams: true,
+        projectInvites: true,
+      },
     });
     if (!project) {
       return res.status(404).send({ message: "Project not found" });
