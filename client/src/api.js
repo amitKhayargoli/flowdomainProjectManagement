@@ -1,16 +1,22 @@
 import axios from "axios";
-import {
-  deleteTask,
-  updateTask,
-} from "../../server/controllers/taskController";
 
 const API_BASE_URL = "http://localhost:5000";
 
-const token = localStorage.getItem("token");
+const token = localStorage.getItem("token"); // Get the token once
+
 export const api = {
   getProjects: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/projects`);
+      if (!token) {
+        throw new Error("Authorization token is missing.");
+      }
+
+      const response = await axios.get(`${API_BASE_URL}/projects`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       return response.data;
     } catch (error) {
       console.error("Error fetching projects:", error);
@@ -24,7 +30,9 @@ export const api = {
         `${API_BASE_URL}/projects/create`,
         projectData,
         {
-          headers: { Authorization: `Bearer ${token}` }, // Send token
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       return response.data;
@@ -35,9 +43,19 @@ export const api = {
   },
 
   getTasks: async (projectId) => {
+    if (!token) {
+      console.error("Authorization token is missing.");
+      return;
+    }
+
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/tasks?projectId=${projectId}`
+        `${API_BASE_URL}/tasks?projectId=${projectId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Pass token directly in header
+          },
+        }
       );
       return response.data;
     } catch (error) {
@@ -47,8 +65,17 @@ export const api = {
   },
 
   getTaskbyId: async (taskId) => {
+    if (!token) {
+      console.error("Authorization token is missing.");
+      return;
+    }
+
     try {
-      const response = await axios.get(`${API_BASE_URL}/tasks/${taskId}`);
+      const response = await axios.get(`${API_BASE_URL}/tasks/${taskId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error("Error fetching task by ID:", error);
@@ -57,10 +84,20 @@ export const api = {
   },
 
   createTask: async (taskData) => {
+    if (!token) {
+      console.error("Authorization token is missing.");
+      return;
+    }
+
     try {
       const response = await axios.post(
         `${API_BASE_URL}/tasks/create`,
-        taskData
+        taskData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       return response.data;
     } catch (error) {
@@ -70,11 +107,19 @@ export const api = {
   },
 
   updateTaskStatus: async (taskId, status) => {
+    if (!token) {
+      console.error("Authorization token is missing.");
+      return;
+    }
+
     try {
       const response = await axios.patch(
         `${API_BASE_URL}/tasks/${taskId}/status`,
+        { status },
         {
-          status,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       return response.data;
@@ -85,10 +130,20 @@ export const api = {
   },
 
   updateTask: async (taskId, updatedTaskData) => {
+    if (!token) {
+      console.error("Authorization token is missing.");
+      return;
+    }
+
     try {
       const response = await axios.put(
         `${API_BASE_URL}/tasks/${taskId}`,
-        updatedTaskData
+        updatedTaskData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       return response.data;
     } catch (error) {
@@ -98,8 +153,17 @@ export const api = {
   },
 
   deleteTask: async (taskId) => {
+    if (!token) {
+      console.error("Authorization token is missing.");
+      return;
+    }
+
     try {
-      await axios.delete(`${API_BASE_URL}/tasks/${taskId}`);
+      await axios.delete(`${API_BASE_URL}/tasks/${taskId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
     } catch (error) {
       console.error("Error deleting task:", error);
       throw error;
@@ -107,6 +171,11 @@ export const api = {
   },
 
   uploadFile: async (data) => {
+    if (!token) {
+      console.error("Authorization token is missing.");
+      return;
+    }
+
     try {
       const uploadResponse = await axios.post(
         "http://localhost:5000/api/file/upload",
@@ -114,12 +183,32 @@ export const api = {
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`, // Directly use token in header
           },
         }
       );
+      return uploadResponse.data;
     } catch (error) {
       console.error("Error uploading file:", error);
       throw error;
+    }
+  },
+
+  generateInvite: async (projectId) => {
+    try {
+      console.log(projectId);
+      const response = await axios.post(
+        `${API_BASE_URL}/projects/invite`,
+        { projectId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("Invite Token:", response.data.inviteToken);
+    } catch (error) {
+      console.error("Error generating invite:", error);
     }
   },
 };

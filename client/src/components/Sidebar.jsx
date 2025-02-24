@@ -35,17 +35,27 @@ const Sidebar = () => {
     (state) => state.global.isSidebarCollapsed
   );
 
-  // Fetch projects from the backend
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/projects");
-        setProjects(response.data);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }
-    };
+  const fetchProjects = async () => {
+    const token = localStorage.getItem("token"); // Get the token from localStorage
 
+    if (!token) {
+      console.error("Authorization token is missing.");
+      return;
+    }
+
+    try {
+      const response = await axios.get("http://localhost:5000/projects", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        },
+      });
+      setProjects(response.data); // Set the fetched projects data
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchProjects();
   }, []);
 
@@ -182,7 +192,7 @@ const SidebarLink = ({ href, icon: Icon, label }) => {
   return (
     <Link to={href} className="w-full">
       <div
-        className={`dark:bg-black-300 relative flex cursor-pointer items-center gap-3 transition-colors hover:bg-gray-100 dark:hover:bg-black ${
+        className={`rounded-md dark:bg-black-300 relative flex cursor-pointer items-center gap-3 transition-colors hover:bg-gray-100 dark:hover:bg-black ${
           isActive ? "text-white dark:bg-[#1d1f21] bg-[#f3f4f6]" : ""
         } justify-start px-8 py-3`}
       >

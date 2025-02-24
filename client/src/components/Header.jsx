@@ -20,7 +20,9 @@ const Header = ({
         <h2 className="text-lg dark:text-white">{description}</h2>
       </div>
 
-      {buttonComponent && <div>{buttonComponent}</div>}
+      <div className="flex gap-3">
+        {buttonComponent && <div>{buttonComponent}</div>}
+      </div>
     </div>
   );
 };
