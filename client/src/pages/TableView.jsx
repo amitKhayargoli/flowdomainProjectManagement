@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -47,6 +47,8 @@ const columns = [
         <span className="p-3 text-yellow-500 xl:p-2">{params.value}</span>
       ) : params.value == "Low" ? (
         <span className="p-3 text-green-400 xl:p-2">{params.value}</span>
+      ) : params.value == "Backlog" ? (
+        <span className="p-3 text-blue-400 xl:p-2">{params.value}</span>
       ) : (
         ""
       ),
@@ -72,19 +74,24 @@ const TableView = ({ id, setIsNewTaskOpen }) => {
   const darkMode = useSelector(isDarkMode);
   const [tasks, setTasks] = useState([]);
 
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
       const data = await api.getTasks(id);
       setTasks(data);
     } catch (error) {
       console.error("Error fetching tasks:", error);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchTasks();
-  }, [id]);
 
+    // const fetchData = setInterval(() => {
+    //   fetchTasks();
+    // }, 2000);
+
+    // return () => clearInterval(fetchData);
+  }, [fetchTasks]);
   return (
     <div className="w-full px-4 py-5 xl:px-6">
       <div className="pt-5">
