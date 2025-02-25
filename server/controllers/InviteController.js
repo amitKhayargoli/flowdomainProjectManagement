@@ -54,7 +54,6 @@ export const handleInvite = async (req, res) => {
 
     console.log("Decoded Token:", decodedToken);
 
-    // Fetch the invite data based on the full token
     const invite = await prisma.projectInvite.findUnique({
       where: { token },
       include: { project: true },
@@ -64,7 +63,6 @@ export const handleInvite = async (req, res) => {
       return res.status(400).json({ error: "Invalid invite token" });
     }
 
-    // Check if the invite has expired
     const now = new Date();
     if (invite.expiresAt < now) {
       return res.status(400).json({ error: "Invite token has expired" });
@@ -75,10 +73,9 @@ export const handleInvite = async (req, res) => {
     if (!userId) {
       return res
         .status(401)
-        .json({ error: "Please sign in to join the project" });
+        .json({ error: "Please sign in to join the project" }); //Err
     }
 
-    // Check if the user is already in the project team
     const userInProject = await prisma.projectTeam.findFirst({
       where: {
         AND: [{ userId: userId }, { projectId: projectId }],
@@ -91,7 +88,6 @@ export const handleInvite = async (req, res) => {
         .json({ error: "User already a member of the project" });
     }
 
-    // Add the user to the project team
     await prisma.projectTeam.create({
       data: {
         userId,
