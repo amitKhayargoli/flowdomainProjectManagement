@@ -32,8 +32,8 @@ export function authenticateToken(req, res, next) {
       return res.status(403).send("Invalid or expired token.");
     }
 
-    req.user = decoded; // Attach decoded token info to the request object
+    req.user = decoded;
     req.userId = decoded.userId;
-    next(); // Proceed to the next middleware/handler
+    next();
   });
 }
