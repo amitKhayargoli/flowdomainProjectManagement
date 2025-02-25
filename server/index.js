@@ -12,6 +12,7 @@ import userRouter from "./routes/userRoute.js";
 import { authenticateToken } from "./middleware/token-middleware.js";
 import { createUploadsFolder } from "./security/helper.js";
 import inviteRouter from "./routes/inviteRoute.js";
+import projectTeamRoutes from "./routes/projecTeamRoute.js";
 
 dotenv.config();
 const app = express();
@@ -33,15 +34,16 @@ app.get("/", (req, res) => {
   res.send("This is the home route");
 });
 
-app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 
-// app.use(authenticateToken);
+app.use(authenticateToken);
+app.use("/api/user", userRouter);
 
 app.use("/projects", projectRoutes);
 app.use("/tasks", taskRoutes);
 app.use("/api/file", uploadRouter);
 app.use("/invite", inviteRouter);
+app.use("/api/team", projectTeamRoutes);
 
 app.use((req, res, next) => {
   console.log(`Request: ${req.method} ${req.path}`);

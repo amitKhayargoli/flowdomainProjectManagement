@@ -2,9 +2,32 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+// export const getProjects = async (req, res) => {
+//   try {
+//     const projects = await prisma.project.findMany(
+
+//     );
+//     res.json(projects);
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .json({ message: `Error fetching projects: ${error.message}` });
+//   }
+// };
+
 export const getProjects = async (req, res) => {
   try {
-    const projects = await prisma.project.findMany();
+    const userId = req.user.userId;
+    const projects = await prisma.project.findMany({
+      where: {
+        projectTeams: {
+          some: {
+            userId: userId,
+          },
+        },
+      },
+    });
+
     res.json(projects);
   } catch (error) {
     res

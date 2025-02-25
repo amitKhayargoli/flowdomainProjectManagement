@@ -1,59 +1,55 @@
-const { PrismaClient } = require("@prisma/client");
+import { PrismaClient } from "@prisma/client";
+
 const prisma = new PrismaClient();
 
-export const addMemberToProject = async (req, res) => {
+export const getCurrentUserProjectTeams = async (req, res) => {
   try {
-    const { projectId, userId } = req.body;
+    const userId = req.userId;
 
-    if (!projectId || !userId) {
-      return res
-        .status(400)
-        .json({ error: "Project ID and User ID are required" });
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
     }
 
-    const projectTeamMember = await prisma.projectTeam.create({
-      data: {
-        userId,
-        projectId,
-      },
-    });
-
-    return res.status(201).json(projectTeamMember);
-  } catch (error) {
-    console.error("Error adding member to project:", error);
-    return res.status(500).json({ error: "Failed to add member to project" });
-  }
-};
-
-const removeMemberFromProject = async (req, res) => {
-  try {
-    const { projectId, userId } = req.body;
-
-    if (!projectId || !userId) {
-      return res
-        .status(400)
-        .json({ error: "Project ID and User ID are required" });
-    }
-
-    const projectTeamMember = await prisma.projectTeam.delete({
+    // Find the current user's projects
+    const userProjects = await prisma.projectTeam.findMany({
       where: {
-        userId_projectId: {
-          userId,
-          projectId,
-        },
+        userId: userId,
+      },
+      include: {
+        project: true,
       },
     });
 
-    return res.status(200).json({ message: "Member removed successfully" });
+    if (!userProjects || userProjects.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No project teams found for this user" });
+    }
+
+    // Get all users involved in the same projects as the current user
+    const projectIds = userProjects.map((team) => team.project.id);
+
+    const projectTeams = await prisma.projectTeam.findMany({
+      where: {
+        projectId: { in: projectIds }, // Get all users involved in the same projects
+      },
+      include: {
+        project: true,
+        user: true,
+      },
+    });
+
+    if (!projectTeams || projectTeams.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No project teams found for these projects" });
+    }
+
+    return res.status(200).json(projectTeams);
   } catch (error) {
-    console.error("Error removing member from project:", error);
+    console.error("Error fetching current user's project teams:", error);
     return res
       .status(500)
-      .json({ error: "Failed to remove member from project" });
+      .json({ error: "Failed to fetch current user's project teams" });
   }
-};
-
-module.exports = {
-  addMemberToProject,
-  removeMemberFromProject,
 };
