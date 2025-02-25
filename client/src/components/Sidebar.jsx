@@ -29,6 +29,36 @@ const Sidebar = () => {
   const [projects, setProjects] = useState([]);
   const [showProjects, setShowProjects] = useState(true);
   const [showPriority, setShowPriority] = useState(true);
+  const [currentUser, setCurrentUser] = useState([]);
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found in localStorage");
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/auth/init",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setCurrentUser(response.data.data);
+      } catch (error) {
+        console.error("Error fetching current user:", error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
+
+  console.log("Current User", currentUser);
 
   const dispatch = useDispatch();
   const isSidebarCollapsed = useSelector(
@@ -70,7 +100,7 @@ const Sidebar = () => {
     <div className={sidebarClassNames}>
       <div className="flex h-[100%] w-full flex-col justify-start">
         <div className="z-50 flex min-h-[56px] w-64 items-center justify-between bg-white px-6 pt-3 dark:bg-black">
-          <div className="text-2xl font-bold text-[#00A6FF] dark:text-white">
+          <div className="text-2xl font-bold text-[#00a6ff] dark:text-white">
             <h1>Flow Domain ™</h1>
           </div>
 
@@ -101,17 +131,12 @@ const Sidebar = () => {
           />
           <div>
             <h3 className="text-md font-bold tracking-wide dark:text-white">
-              Amit Khayargoli
+              {currentUser.username}
             </h3>
 
             <h3 className="text-sm font-normal tracking-wide dark:text-white">
-              amit99@gmail.com
+              {currentUser.email}
             </h3>
-            {/* 
-            <div className="mt-1 flex items-start gap-2">
-              <LockIcon className="mt-[0.1rem] h-3 w-3 text-gray-500 dark:text-gray-400" />
-              <p className="text-xs text-gray-500">Private</p>
-            </div> */}
           </div>
         </div>
 
@@ -120,7 +145,7 @@ const Sidebar = () => {
           {/* <SidebarLink icon={Briefcase} label="Timeline" href="timeline" /> */}
           {/* <SidebarLink icon={Search} label="Search" href="search" />   */}
 
-          <SidebarLink icon={Settings} label="Settings" href="settings" />
+          {/* <SidebarLink icon={Settings} label="Settings" href="settings" /> */}
           <SidebarLink icon={User} label="Users" href="users" />
           <SidebarLink icon={Users} label="Teams" href="teams" />
         </nav>

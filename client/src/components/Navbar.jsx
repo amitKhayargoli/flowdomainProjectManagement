@@ -4,6 +4,7 @@ import { Link } from "react-router-dom"; // Use react-router-dom Link instead of
 import { useDispatch, useSelector } from "react-redux";
 import { toggleDarkMode, toggleSidebar } from "../redux/globalSlice"; // Adjust the import path as necessary
 import Header from "./Header";
+import AccountMenu from "./AccountMenu";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -56,6 +57,7 @@ const Navbar = () => {
           <Settings className="h-6 w-6 cursor-pointer dark:text-white" />
         </Link>
 
+        <AccountMenu />
         <div className="ml-2 mr-5 hidden min-h-[2em] w-[0.1rem] bg-gray-200 md:inline-block"></div>
       </div>
     </div>
