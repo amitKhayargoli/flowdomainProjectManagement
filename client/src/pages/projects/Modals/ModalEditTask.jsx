@@ -134,7 +134,7 @@ const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} name="Update task">
         <form onSubmit={handleSubmit(onSubmit)}>
           <input
             type="text"

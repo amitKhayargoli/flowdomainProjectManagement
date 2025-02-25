@@ -29,9 +29,19 @@ const ProjectHeader = ({ id, activeTab, setActiveTab, project }) => {
 
   const generateInvite = async () => {
     try {
-      const response = await axios.post("http://localhost:5000/invite", {
-        projectId: parsedProjectId,
-      });
+      const Authtoken = localStorage.getItem("token");
+
+      const response = await axios.post(
+        "http://localhost:5000/invite",
+        {
+          projectId: parsedProjectId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${Authtoken}`,
+          },
+        }
+      );
 
       const token = response.data.token;
 

@@ -47,7 +47,6 @@ const ModalNewProject = ({ isOpen, onClose }) => {
     fetchCurrentUser();
   }, []);
 
-  console.log("Current User", currentUser);
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {

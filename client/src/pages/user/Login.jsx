@@ -30,39 +30,42 @@ const Login = () => {
   });
 
   const onSubmit = async (data) => {
-    console.log("Login btn clicked");
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        data,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
-    console.log("Logging in with:", data);
+      if (response.data?.data?.access_token) {
+        localStorage.setItem("token", response.data.data.access_token);
+        localStorage.setItem("role", response.data.data.role);
+        localStorage.setItem("userId", response.data.data.userId);
 
-    axios
-      .post("http://localhost:5000/api/auth/login", data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        console.log("Login Response:", response.data.data.access_token);
+        reset();
 
-        if (response.data && response.data.data.access_token) {
-          console.log("Access Token:", response.data.data.access_token);
-          localStorage.setItem("token", response.data.data.access_token);
-
-          localStorage.setItem("role", response.data.data.role);
-          localStorage.setItem("userId", response.data.data.userId);
-
-          console.log(response.data.data.role);
-          reset();
-          if (response.data.data.role === "user") {
+        const inviteToken = localStorage.getItem("InviteToken");
+        if (inviteToken) {
+          navigate(`/invite?token=${inviteToken}`);
+          localStorage.removeItem("InviteToken");
+        } else {
+          if (localStorage.getItem("joinedProject")) {
             navigate("/workspace/projects");
-          } else if (response.data.data.role === "admin") {
-            navigate("/Admin/");
+          } else {
+            navigate(
+              response.data.data.role === "user"
+                ? "/workspace/projects"
+                : "/Admin/"
+            );
           }
         }
-      })
-      .catch((error) => {
-        toast.error("Login failed! Check credentials");
-        reset();
-      });
+      }
+    } catch (error) {
+      toast.error("Login failed! Check credentials");
+      reset();
+    }
   };
 
   const hoverClassnames =
