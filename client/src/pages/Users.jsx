@@ -10,7 +10,7 @@ import { Box } from "@mui/material";
 import { dataGridSxStyles } from "../../lib/utils/utils";
 import { isDarkMode } from "../redux/globalSlice";
 import { useSelector } from "react-redux";
-
+import avatar from "../images/avatar.png";
 const Users = () => {
   const darkMode = useSelector(isDarkMode);
 
@@ -29,7 +29,18 @@ const Users = () => {
     { field: "id", headerName: "User ID", width: 90 },
     { field: "name", headerName: "Name", width: 150 },
     { field: "email", headerName: "Email", width: 200 },
-    { field: "ProfilePicture", headerName: "Profile Picture", width: 150 },
+    {
+      field: "ProfilePicture",
+      headerName: "Profile Picture",
+      width: 150,
+      renderCell: (params) => (
+        <img
+          src={params.value || avatar}
+          alt="Profile"
+          className="w-12 h-12 rounded-full object-cover"
+        />
+      ),
+    },
   ];
 
   useEffect(() => {
@@ -40,6 +51,7 @@ const Users = () => {
         id: user.userId,
         name: user.username,
         email: user.email,
+        ProfilePicture: user.profilePictureUrl,
       }));
 
       setUserData(rows);
