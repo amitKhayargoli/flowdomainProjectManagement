@@ -6,6 +6,8 @@ import {
   Home as HomeIcon,
   Layers as Layers3Icon,
   Lock as LockIcon,
+  LucideLayoutDashboard,
+  MessageCircleCodeIcon,
   Search,
   Settings,
   ShieldAlert,
@@ -68,14 +70,20 @@ const AdminSidebar = () => {
         </div>
 
         <nav className="z-10 w-full">
-          <SidebarLink icon={HomeIcon} label="Projects" href="projects" />
+          <SidebarLink
+            icon={LucideLayoutDashboard}
+            label="Dashboard"
+            href="dashboard"
+          />
           {/* <SidebarLink icon={Briefcase} label="Timeline" href="timeline" /> */}
-          <SidebarLink icon={Search} label="Search" href="search" />
 
-          <SidebarLink icon={Settings} label="Settings" href="settings" />
           <SidebarLink icon={User} label="Users" href="users" />
           <SidebarLink icon={User} label="Blog" href="blog" />
-          <SidebarLink icon={User} label="Docs" href="users" />
+          <SidebarLink
+            icon={MessageCircleCodeIcon}
+            label="Comments"
+            href="comments"
+          />
           <SidebarLink icon={Users} label="Changelog" href="teams" />
         </nav>
       </div>
