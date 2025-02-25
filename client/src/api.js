@@ -1,10 +1,11 @@
 import axios from "axios";
 import { getUsersbyTeam } from "../../server/controllers/userController";
 import { getCurrentUserProjectTeams } from "../../server/controllers/projectTeamcontroller";
+import { getUserTasks } from "../../server/controllers/taskController";
 
 const API_BASE_URL = "http://localhost:5000";
 
-const token = localStorage.getItem("token"); // Get the token once
+const token = localStorage.getItem("token");
 
 export const api = {
   getProjects: async () => {
@@ -88,6 +89,7 @@ export const api = {
     }
   },
 
+  //Tasks related to projectId
   getTasks: async (projectId) => {
     if (!token) {
       console.error("Authorization token is missing.");
@@ -106,6 +108,27 @@ export const api = {
       return response.data;
     } catch (error) {
       console.error("Error fetching tasks:", error);
+      throw error;
+    }
+  },
+
+  getUserTasks: async () => {
+    const token = localStorage.getItem("token"); // Retrieve token here
+    if (!token) {
+      console.error("Authorization token is missing.");
+      return;
+    }
+
+    try {
+      console.log("Making request with token:", token); // Debug log
+      const response = await axios.get(`${API_BASE_URL}/tasks/getUserTasks/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user's tasks:", error.response || error);
       throw error;
     }
   },
@@ -129,6 +152,19 @@ export const api = {
     }
   },
 
+  deleteAccount: async () => {
+    try {
+      await axios.put(`${API_BASE_URL}/api/user/deleteAccount`, null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (error) {
+      console.log(token);
+      console.error("Error deleting account:", error);
+      throw error;
+    }
+  },
   createTask: async (taskData) => {
     if (!token) {
       console.error("Authorization token is missing.");

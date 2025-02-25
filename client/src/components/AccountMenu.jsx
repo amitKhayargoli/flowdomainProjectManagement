@@ -86,8 +86,6 @@ export default function AccountMenu() {
     fetchCurrentUser();
   }, []);
 
-  console.log(currentUser);
-
   useEffect(() => {
     if (currentUser) {
       setValue("email", currentUser.email || "");
@@ -168,25 +166,21 @@ export default function AccountMenu() {
     }
   };
 
-  const handleDelete = (e) => {
-    if (window.confirm("Are you sure you want to delete your account?")) {
-      api
-        .deleteUser()
-        .then((response) => {
-          console.log("Delete User Response:", response); // Log the full response
-          if (response && response.data) {
-            console.log("Delete User Response:", response.data);
-            toast.success("Account deleted successfully");
-            localStorage.removeItem("token");
-            navigate("/Login");
-            setImage("");
-          }
-        })
-        .catch((err) => {
-          console.error("Error deleting user:", err);
-          toast.error(err.message);
-        });
-    }
+  const handleDelete = async (e) => {
+    const token = localStorage.getItem("token");
+
+    await api
+      .deleteAccount()
+      .then((response) => {
+        toast.success("Account deleted successfully");
+        localStorage.removeItem("token");
+        navigate("/Login");
+        setImage("");
+      })
+      .catch((err) => {
+        console.error("Error deleting user:", err);
+        toast.error(err.message);
+      });
   };
 
   const handleClick = (event) => setAnchorEl(event.currentTarget);

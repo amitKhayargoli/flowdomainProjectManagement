@@ -36,9 +36,9 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRouter);
 
-app.use(authenticateToken);
 app.use("/api/user", userRouter);
 
+app.use(authenticateToken);
 app.use("/projects", projectRoutes);
 app.use("/tasks", taskRoutes);
 app.use("/api/file", uploadRouter);

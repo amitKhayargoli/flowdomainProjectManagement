@@ -26,12 +26,12 @@ export const getCurrentUserProjectTeams = async (req, res) => {
         .json({ error: "No project teams found for this user" });
     }
 
-    // Get all users involved in the same projects as the current user
     const projectIds = userProjects.map((team) => team.project.id);
 
+    //Get users related to the same project
     const projectTeams = await prisma.projectTeam.findMany({
       where: {
-        projectId: { in: projectIds }, // Get all users involved in the same projects
+        projectId: { in: projectIds },
       },
       include: {
         project: true,

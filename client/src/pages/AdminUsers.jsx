@@ -5,25 +5,50 @@ import {
   GridToolbarContainer,
   GridToolbarExport,
   GridToolbarFilterButton,
+  GridActionsCellItem,
 } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
 import { dataGridSxStyles } from "../../lib/utils/utils";
 import { isDarkMode } from "../redux/globalSlice";
 import { useSelector } from "react-redux";
 import avatar from "../images/avatar.png";
-const Users = () => {
-  const darkMode = useSelector(isDarkMode);
+import DeleteIcon from "@mui/icons-material/Delete";
 
-  const CustomToolbar = () => {
-    return (
-      <GridToolbarContainer className="toolbar flex gap-2">
-        <GridToolbarFilterButton />
-        <GridToolbarExport />
-      </GridToolbarContainer>
-    );
+const AdminUsers = () => {
+  const darkMode = useSelector(isDarkMode);
+  const [userData, setUserData] = useState([]);
+
+  // Function to fetch user data
+  const getUserData = async () => {
+    try {
+      const response = await api.getUsersbyTeam();
+      const users = response.data;
+      const rows = users.map((user) => ({
+        id: user.userId,
+        name: user.username,
+        email: user.email,
+        ProfilePicture: user.profilePictureUrl,
+      }));
+      setUserData(rows);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
   };
 
-  const [userData, setUserData] = useState([]);
+  const handleDeleteUser = async (userId) => {
+    try {
+      await api.deleteUser(userId);
+      setUserData((prevUsers) =>
+        prevUsers.filter((user) => user.id !== userId)
+      );
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+  };
+
+  useEffect(() => {
+    getUserData();
+  }, []);
 
   const columns = [
     { field: "id", headerName: "User ID", width: 90 },
@@ -37,30 +62,24 @@ const Users = () => {
         <img
           src={params.value || avatar}
           alt="Profile"
-          className="w-12 h-12 rounded-full object-cover"
+          className="w-12 mt-2 h-12 rounded-full object-cover"
         />
       ),
     },
+    {
+      field: "actions",
+      headerName: "Actions",
+      type: "actions",
+      width: 150,
+      getActions: (params) => [
+        <GridActionsCellItem
+          icon={<DeleteIcon color="error" />}
+          label="Delete"
+          onClick={() => handleDeleteUser(params.id)}
+        />,
+      ],
+    },
   ];
-
-  useEffect(() => {
-    const getUserData = async () => {
-      const response = await api.getUsersbyTeam();
-      const user = response.data;
-      const rows = user.map((user) => ({
-        id: user.userId,
-        name: user.username,
-        email: user.email,
-        ProfilePicture: user.profilePictureUrl,
-      }));
-
-      setUserData(rows);
-    };
-
-    getUserData();
-  }, []);
-
-  console.log("userData", userData);
 
   return (
     <div className="flex flex-col h-[100vh] bg-white items-center !p-8 dark:bg-black">
@@ -73,11 +92,8 @@ const Users = () => {
       >
         <DataGrid
           className="border border-gray-200 dark:!border-black dark:!bg-[#1d1f21] dark:!text-white shadow"
-          slots={{
-            toolbar: CustomToolbar,
-          }}
           columns={columns}
-          rows={userData || []}
+          rows={userData}
           sx={dataGridSxStyles(darkMode)}
         />
       </Box>
@@ -85,4 +101,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default AdminUsers;
