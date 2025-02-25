@@ -17,7 +17,7 @@ const dummyTasks = [
     startDate: "2025-02-19",
     dueDate: "2025-02-21",
     priority: "High",
-    tags: "urgent,important",
+    tags: "",
     comments: [{ id: 1, text: "Comment 1" }],
     attachments: [],
 
