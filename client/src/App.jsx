@@ -17,6 +17,11 @@ import AdminPage from "./pages/Admin/AdminPage";
 import Invite from "./pages/invite";
 import Users from "./pages/Users";
 import Teams from "./pages/Teams";
+import AdminUsers from "./pages/AdminUsers";
+import High from "./pages/High";
+import Medium from "./pages/Medium";
+import Low from "./pages/Low";
+import Backlog from "./pages/Backlog";
 
 function App() {
   return (
@@ -36,11 +41,17 @@ function App() {
               <Route path="projects/:id" element={<Project />} />
               <Route path="users" element={<Users />} />
               <Route path="teams" element={<Teams />} />
+              <Route path="priority/high" element={<High />} />
+              <Route path="priority/medium" element={<Medium />} />
+              <Route path="priority/low" element={<Low />} />
+              <Route path="priority/backlog" element={<Backlog />} />
             </Route>
           </Route>
 
           <Route element={<ProtectedRoute roleRequired={"admin"} />}>
-            <Route path="/Admin" element={<AdminPage />}></Route>
+            <Route path="/Admin" element={<AdminPage />}>
+              <Route path="users" element={<AdminUsers />}></Route>
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>
