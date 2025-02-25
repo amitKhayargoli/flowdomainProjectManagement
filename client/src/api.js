@@ -1,4 +1,6 @@
 import axios from "axios";
+import { getUsersbyTeam } from "../../server/controllers/userController";
+import { getCurrentUserProjectTeams } from "../../server/controllers/projectTeamcontroller";
 
 const API_BASE_URL = "http://localhost:5000";
 
@@ -38,6 +40,50 @@ export const api = {
       return response.data;
     } catch (error) {
       console.error("Error creating project:", error);
+      throw error;
+    }
+  },
+
+  updateUser: async (userData) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.put(`${API_BASE_URL}/api/user`, userData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error("Error updating user:", error);
+      throw error;
+    }
+  },
+
+  getUsersbyTeam: async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/user/team`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching users by team:", error);
+      throw error;
+    }
+  },
+
+  getCurrentUserProjectTeams: async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/team`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching current user's project teams:", error);
       throw error;
     }
   },
