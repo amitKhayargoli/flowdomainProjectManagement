@@ -135,7 +135,7 @@ const BoardView = ({ id, setIsNewTaskOpen }) => {
         transition={{ duration: 2 }}
       >
         <DndProvider backend={HTML5Backend}>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 p-5">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 p-5 ">
             {taskStatus.map((status) => (
               <TaskColumn
                 key={status}
@@ -181,7 +181,7 @@ const TaskColumn = ({
       ref={(instance) => {
         drop(instance);
       }}
-      className={`sl:py-4 rounded-lg py-2 xl:px-2 hover:cursor-pointer transition-transform duration-500 transform hover:scale-105${
+      className={`sl:py-4 rounded-lg py-2 xl:px-2 hover:cursor-pointer transition-transform duration-500 transform ${
         isOver ? "bg-blue-100 dark:bg-neutral-950" : ""
       }`}
     >
@@ -303,17 +303,19 @@ const Task = ({ task, fetchTasks }) => {
           drag(instance);
         }}
         className={`mb-4 rounded-md bg-white shadow dark:bg-[#1d1f21] ${
-          isDragging ? "opacity-50" : "opacity-100"
+          isDragging ? "opacity-50" : "opacity-100  "
         }`}
       >
-        {task.fileURL && (
-          <img
-            src={`${task.fileURL}`}
-            alt={task.fileURL}
-            width={400}
-            height={200}
-            className="h-auto w-full rounded-t-md"
-          />
+        {task.fileURL ? (
+          <div className="aspect-[16/9] overflow-hidden mb-4 rounded-t-lg">
+            <img
+              src={task.fileURL}
+              alt={task.fileURL}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ) : (
+          ""
         )}
 
         <div className="p-4 md:p-6">
@@ -325,7 +327,7 @@ const Task = ({ task, fetchTasks }) => {
                 {taskTagsSplit.map((tag) => (
                   <div
                     key={tag}
-                    className="rounded-full bg-blue-400 px-2 py-1 text-xs"
+                    className="rounded-full bg-blue-400 px-2 py-1 text-xs text-black"
                   >
                     {tag}
                   </div>
