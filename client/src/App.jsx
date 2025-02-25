@@ -14,8 +14,9 @@ import Projects from "./pages/Projects";
 import ProtectedRoute from "./ProtectedRoute";
 import Changelog from "./pages/Changelog";
 import AdminPage from "./pages/Admin/AdminPage";
-import JoinProject from "./pages/JoinProject";
 import Invite from "./pages/invite";
+import Users from "./pages/Users";
+import Teams from "./pages/Teams";
 
 function App() {
   return (
@@ -33,6 +34,8 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="projects" element={<Projects />} />
               <Route path="projects/:id" element={<Project />} />
+              <Route path="users" element={<Users />} />
+              <Route path="teams" element={<Teams />} />
             </Route>
           </Route>
 
