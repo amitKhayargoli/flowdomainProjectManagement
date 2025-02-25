@@ -16,10 +16,16 @@ const Project = () => {
   const [isNewTaskOpen, setIsNewTaskOpen] = useState(false);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     const fetchProjectData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/projects/${id}`
+          `http://localhost:5000/projects/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         setProject(response.data.name);
       } catch (error) {

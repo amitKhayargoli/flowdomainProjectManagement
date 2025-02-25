@@ -19,6 +19,29 @@ export const getTasks = async (req, res) => {
   }
 };
 
+export const getUserTasks = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    // Fetch tasks that belong to projects where the user is a team member
+    const tasks = await prisma.task.findMany({
+      where: {
+        project: {
+          projectTeams: {
+            some: {
+              userId: userId,
+            },
+          },
+        },
+      },
+    });
+
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ message: `Error fetching tasks: ${error.message}` });
+  }
+};
+
 export const getTaskById = async (req, res) => {
   const { taskId } = req.params;
 
