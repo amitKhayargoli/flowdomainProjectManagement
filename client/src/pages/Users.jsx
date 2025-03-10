@@ -37,7 +37,7 @@ const Users = () => {
         <img
           src={params.value || avatar}
           alt="Profile"
-          className="w-12 h-12 rounded-full object-cover"
+          className="mt-2 w-12 h-12 rounded-full object-cover"
         />
       ),
     },
@@ -63,7 +63,7 @@ const Users = () => {
   console.log("userData", userData);
 
   return (
-    <div className="flex flex-col h-[100vh] bg-white items-center !p-8 dark:bg-black">
+    <div className="flex flex-col  bg-white items-center !p-8 dark:bg-black">
       <h2 className="!text-3xl font-bold mb-4 dark:text-white">Users</h2>
       <Box
         sx={{
