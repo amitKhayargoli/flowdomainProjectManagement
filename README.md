@@ -43,7 +43,7 @@ Flow Domain is a **PERN-stack** project management web application designed to e
    - Create a `.env` file in the backend directory and add:
      ```env
      DATABASE_URL=your_database_url
-     JWT_SECRET=your_jwt_secret
+     secretkey=your_jwt_secret
      ```
 
 4. **Run the Backend Server**
