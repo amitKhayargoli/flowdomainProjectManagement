@@ -127,40 +127,47 @@ const ProjectHeader = ({ id, activeTab, setActiveTab, project }) => {
       </div>
 
       {isModalInviteOpen && (
-        <div className="p-3 px-5 rounded-md absolute md:my-0 md:mx-0   w-full h-full  md:top-[30%] sm:left-[30%]  md:w-200 md:h-100 z-500 inset-0  bg-black/80  dark:bg-[#080808] ">
-          <div className="hidden md:flex gap-3 flex-row-reverse">
-            <Circle
-              onClick={() => setIsModalInviteOpen(false)}
-              width={18}
-              className="text-red-600"
-              fill="currentColor"
-            />
-            <Circle
-              width={18}
-              className="text-yellow-500"
-              fill="currentColor"
-            />
-            <Circle width={18} className="text-green-600" fill="currentColor" />
-          </div>
+        <div className="p-3 px-5 rounded-md absolute md:my-0 md:mx-0   w-full h-full   z-500 inset-0 flex items-center justify-center ">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-md z-10"></div>
 
-          <div className="mt-8">
-            <h1 className="text-xl font-bold text-center text-white">
-              Invite Friends
-            </h1>
-            <h1 className="text-xl font-bold text-center text-blue-400">
-              Send Invitation Link
-            </h1>
-          </div>
+          {/* Modal Contents */}
 
-          <div className="gap-6 text-white bg-black/80 h-30 px-5 py-8 items-center flex justify-between mt-10 rounded-sm  ">
-            <h1 className="text-[14px] break-all ">{inviteLink}</h1>
-
-            <button
-              onClick={handleCopy}
-              className="bg-blue-600 my-1 px-5 p-2 text-lg hover:bg-blue-600 rounded cursor-pointer"
-            >
-              Copy
-            </button>
+          <div className="relative z-20 w-full md:w-200 md:h-100 p-6 rounded-lg bg-black/80  dark:bg-[#080808] ">
+            <div className="hidden md:flex gap-3 flex-row-reverse">
+              <Circle
+                onClick={() => setIsModalInviteOpen(false)}
+                width={18}
+                className="text-red-600"
+                fill="currentColor"
+              />
+              <Circle
+                width={18}
+                className="text-yellow-500"
+                fill="currentColor"
+              />
+              <Circle
+                width={18}
+                className="text-green-600"
+                fill="currentColor"
+              />
+            </div>
+            <div className="mt-8">
+              <h1 className="text-xl font-bold text-center text-white">
+                Invite Friends
+              </h1>
+              <h1 className="text-xl font-bold text-center text-blue-400">
+                Send Invitation Link
+              </h1>
+            </div>
+            <div className="gap-6 text-white bg-black/80 h-30 px-5 py-8 items-center flex justify-between mt-10 rounded-sm  ">
+              <h1 className="text-[14px] break-all ">{inviteLink}</h1>
+              <button
+                onClick={handleCopy}
+                className="bg-blue-600 my-1 px-5 p-2 text-lg hover:bg-blue-600 rounded cursor-pointer"
+              >
+                Copy
+              </button>
+            </div>
           </div>
         </div>
       )}

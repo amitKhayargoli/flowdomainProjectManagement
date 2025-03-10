@@ -3,6 +3,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSidebar } from "../../redux/globalSlice"; // Adjust the import path as necessary
 import {
+  Briefcase,
   Home as HomeIcon,
   Layers as Layers3Icon,
   Lock as LockIcon,
@@ -16,9 +17,43 @@ import {
   X,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom"; // Use react-router-dom for navigation
+import avatar from "../../images/avatar.png";
 
 const AdminSidebar = () => {
   const [projects, setProjects] = useState([]);
+  const [currentUser, setCurrentUser] = useState([]);
+
+  const fetchCurrentUser = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found in localStorage");
+      return;
+    }
+
+    try {
+      const response = await axios.get("http://localhost:5000/api/auth/init", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const id = Number(response.data.data.userId);
+
+      const responseUser = await axios.get(
+        `http://localhost:5000/api/user/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      console.log(responseUser.data.data);
+
+      setCurrentUser(responseUser.data.data);
+    } catch (error) {
+      console.error("Error fetching current user:", error);
+    }
+  };
+  useEffect(() => {
+    fetchCurrentUser();
+  }, []);
 
   const dispatch = useDispatch();
   const isSidebarCollapsed = useSelector(
@@ -51,31 +86,27 @@ const AdminSidebar = () => {
 
         <div className="flex items-center gap-3 border-y-[1.5px] border-gray-200 px-6 py-2 rounded-md  dark:border-0 ">
           <img
-            className="max-h-12 object-cover"
+            className="object-cover rounded-full  w-15   h-15 overflow-hidden"
             alt="Logo"
-            src="https://preview.redd.it/no-spoilers-new-season-2-image-without-text-fan-edit-v0-t0u718ort64d1.png?width=640&crop=smart&auto=webp&s=362f814491baee7c942af01213f41c9b05ffb2e1"
-            width={40}
-            height={60}
-            style={{ borderRadius: "50%" }}
+            src={currentUser.profilePictureUrl || avatar}
           />
           <div>
             <h3 className="text-md font-bold tracking-wide dark:text-white">
-              Amit Khayargoli
+              {currentUser.username}
             </h3>
 
             <h3 className="text-sm font-normal tracking-wide dark:text-white">
-              amit99@gmail.com
+              {currentUser.email}
             </h3>
           </div>
         </div>
-
         <nav className="z-10 w-full">
           <SidebarLink
             icon={LucideLayoutDashboard}
             label="Dashboard"
             href="dashboard"
           />
-          {/* <SidebarLink icon={Briefcase} label="Timeline" href="timeline" /> */}
+          <SidebarLink icon={Briefcase} label="Projects" href="Projects" />
 
           <SidebarLink icon={User} label="Users" href="users" />
           <SidebarLink icon={User} label="Blog" href="blog" />
