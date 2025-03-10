@@ -118,21 +118,6 @@ export const updateTaskStatus = async (req, res) => {
   }
 };
 
-export const deleteTask = async (req, res) => {
-  const { taskId } = req.params;
-
-  try {
-    await prisma.task.delete({
-      where: {
-        id: Number(taskId),
-      },
-    });
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ message: `Error deleting task: ${error.message}` });
-  }
-};
-
 export const updateTask = async (req, res) => {
   const { taskId } = req.params;
   const { title, description, priority, startDate, dueDate, fileURL } =
@@ -156,5 +141,20 @@ export const updateTask = async (req, res) => {
   } catch (error) {
     console.error(`Error: ${error.message}`);
     res.status(500).json({ message: `Error updating task: ${error.message}` });
+  }
+};
+
+export const deleteTask = async (req, res) => {
+  const { taskId } = req.params;
+
+  try {
+    await prisma.task.delete({
+      where: {
+        id: Number(taskId),
+      },
+    });
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ message: `Error deleting task: ${error.message}` });
   }
 };

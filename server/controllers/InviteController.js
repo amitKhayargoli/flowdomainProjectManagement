@@ -3,14 +3,12 @@ import crypto from "crypto";
 
 const prisma = new PrismaClient();
 
-// Generate a secure token that includes the projectId
 const generateInviteToken = (projectId) => {
-  const baseToken = crypto.randomBytes(8).toString("hex"); // Generates a 16-character hex token
+  const baseToken = crypto.randomBytes(8).toString("hex");
   const tokenData = JSON.stringify({ baseToken, projectId });
-  return Buffer.from(tokenData).toString("base64"); // Encode projectId and baseToken in base64
+  return Buffer.from(tokenData).toString("base64");
 };
 
-// Generate invite for a project
 export const generateInvite = async (req, res) => {
   try {
     const { projectId } = req.body;
@@ -30,7 +28,6 @@ export const generateInvite = async (req, res) => {
       },
     });
 
-    // Return the generated token and expiration time
     return res.status(200).json({
       token,
       expiresAt,
@@ -47,13 +44,9 @@ export const handleInvite = async (req, res) => {
   if (!token) {
     return res.status(400).json({ error: "No token provided" });
   }
-
   try {
     const decodedToken = Buffer.from(token, "base64").toString("utf-8");
     const { baseToken, projectId } = JSON.parse(decodedToken);
-
-    console.log("Decoded Token:", decodedToken);
-
     const invite = await prisma.projectInvite.findUnique({
       where: { token },
       include: { project: true },
@@ -69,7 +62,6 @@ export const handleInvite = async (req, res) => {
     }
 
     const userId = req.user?.userId;
-
     if (!userId) {
       return res
         .status(401)

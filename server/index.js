@@ -13,6 +13,7 @@ import { authenticateToken } from "./middleware/token-middleware.js";
 import { createUploadsFolder } from "./security/helper.js";
 import inviteRouter from "./routes/inviteRoute.js";
 import projectTeamRoutes from "./routes/projecTeamRoute.js";
+import blogRoutes from "./routes/blogRoute.js";
 
 dotenv.config();
 const app = express();
@@ -38,6 +39,7 @@ app.use("/api/auth", authRouter);
 
 app.use("/api/user", userRouter);
 
+app.use("/api/blog", blogRoutes);
 app.use(authenticateToken);
 app.use("/projects", projectRoutes);
 app.use("/tasks", taskRoutes);

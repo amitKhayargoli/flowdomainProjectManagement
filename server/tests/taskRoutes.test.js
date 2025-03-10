@@ -1,160 +1,196 @@
-// import request from "supertest";
-// import express from "express";
-// import taskRoute from "../routes/taskRoutes";
-// import * as taskController from "../controllers/taskController";
+import request from "supertest";
+import express from "express";
+import taskRoute from "../routes/taskRoutes";
+import * as taskController from "../controllers/taskController";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
-// const app = express();
-// app.use(express.json());
-// app.use("/tasks", taskRoute);
+dotenv.config();
 
-// jest.mock("../controllers/taskController");
+const generateToken = (payload) => {
+  const options = { expiresIn: process.env.expiresIn };
+  return jwt.sign(payload, process.env.secretkey, options);
+};
 
-// describe("Task Routes", () => {
-//   it("should get all tasks", async () => {
-//     const tasks = [
-//       {
-//         taskId: 1,
-//         title: "Test Task",
-//         description: "Test Description",
-//         status: "Pending",
-//         userId: 1,
-//         categoryId: 1,
-//       },
-//     ];
+const app = express();
+app.use(express.json());
+app.use("/tasks", taskRoute);
 
-//     taskController.getTasks.mockResolvedValue(tasks);
+jest.mock("../controllers/taskController");
 
-//     const response = await request(app).get("/tasks");
+describe("Task Routes", () => {
+  const mockUserPayload = {
+    userId: 1,
+    username: "Amit",
+    email: "amit@gmail.com",
+    role: "user",
+  };
+  const mockToken = generateToken(mockUserPayload);
+  it("should get all tasks", async () => {
+    const tasks = [
+      {
+        taskId: 1,
+        title: "Test Task",
+        description: "Test Description",
+        status: "Pending",
+        userId: 1,
+        categoryId: 1,
+      },
+    ];
 
-//     expect(response.status).toBe(200);
-//     expect(response.body).toEqual({ data: tasks });
-//   });
+    taskController.getTasks.mockResolvedValue(tasks);
 
-//   it("should create a new task", async () => {
-//     const newTask = {
-//       title: "New Task",
-//       description: "New Task Description",
-//       status: "Pending",
-//       userId: 1,
-//       categoryId: 1,
-//     };
+    const response = await request(app)
+      .get("/tasks")
+      .set("Authorization", `Bearer ${mockToken}`);
 
-//     taskController.createTask.mockResolvedValue(newTask);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ data: tasks });
+  });
 
-//     const response = await request(app).post("/tasks/create").send(newTask);
+  it("should create a new task", async () => {
+    const newTask = {
+      title: "New Task",
+      description: "New Task Description",
+      status: "Pending",
+      userId: 1,
+      categoryId: 1,
+    };
 
-//     expect(response.status).toBe(201);
-//     expect(response.body).toEqual({
-//       data: newTask,
-//       message: "Task created successfully",
-//     });
-//   });
+    taskController.createTask.mockResolvedValue(newTask);
 
-//   it("should get tasks by user", async () => {
-//     const userTasks = [
-//       {
-//         taskId: 1,
-//         title: "Test Task",
-//         description: "Test Description",
-//         status: "Pending",
-//         userId: 1,
-//         categoryId: 1,
-//       },
-//     ];
+    const response = await request(app)
+      .post("/tasks/create")
+      .set("Authorization", `Bearer ${mockToken}`)
+      .send(newTask);
 
-//     taskController.getUserTasks.mockResolvedValue(userTasks);
+    expect(response.status).toBe(201);
+    expect(response.body).toEqual({
+      data: newTask,
+      message: "Task created successfully",
+    });
+  });
 
-//     const response = await request(app).get("/tasks/getUserTasks");
+  it("should get tasks by user", async () => {
+    const userTasks = [
+      {
+        taskId: 1,
+        title: "Test Task",
+        description: "Test Description",
+        status: "Pending",
+        userId: 1,
+        categoryId: 1,
+      },
+    ];
 
-//     expect(response.status).toBe(200);
-//     expect(response.body).toEqual({ data: userTasks });
-//   });
+    taskController.getUserTasks.mockResolvedValue(userTasks);
 
-//   it("should get a task by ID", async () => {
-//     const task = {
-//       taskId: 1,
-//       title: "Test Task",
-//       description: "Test Description",
-//       status: "Pending",
-//       userId: 1,
-//       categoryId: 1,
-//     };
+    const response = await request(app)
+      .get("/tasks/getUserTasks")
+      .set("Authorization", `Bearer ${mockToken}`);
 
-//     taskController.getTaskById.mockResolvedValue(task);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ data: userTasks });
+  });
 
-//     const response = await request(app).get("/tasks/1");
+  it("should get a task by ID", async () => {
+    const task = {
+      taskId: 1,
+      title: "Test Task",
+      description: "Test Description",
+      status: "Pending",
+      userId: 1,
+      categoryId: 1,
+    };
 
-//     expect(response.status).toBe(200);
-//     expect(response.body).toEqual({ data: task });
-//   });
+    taskController.getTaskById.mockResolvedValue(task);
 
-//   it("should update a task status", async () => {
-//     const updatedStatus = { status: "Completed" };
+    const response = await request(app)
+      .get("/tasks/1")
+      .set("Authorization", `Bearer ${mockToken}`);
 
-//     taskController.updateTaskStatus.mockResolvedValue([1]); // [1] indicates one row updated
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ data: task });
+  });
 
-//     const response = await request(app)
-//       .patch("/tasks/1/status")
-//       .send(updatedStatus);
+  it("should update a task status", async () => {
+    const updatedStatus = { status: "Completed" };
 
-//     expect(response.status).toBe(200);
-//     expect(response.body).toEqual({
-//       message: "Task status updated successfully",
-//     });
-//   });
+    taskController.updateTaskStatus.mockResolvedValue([1]);
 
-//   it("should update a task", async () => {
-//     const updatedTask = {
-//       taskId: 1,
-//       title: "Updated Task",
-//       description: "Updated Task Description",
-//       status: "In Progress",
-//       userId: 1,
-//       categoryId: 1,
-//     };
+    const response = await request(app)
+      .patch("/tasks/1/status")
+      .set("Authorization", `Bearer ${mockToken}`)
+      .send(updatedStatus);
 
-//     taskController.updateTask.mockResolvedValue([1]);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      message: "Task status updated successfully",
+    });
+  });
 
-//     const response = await request(app).put("/tasks/1").send(updatedTask);
+  it("should update a task", async () => {
+    const updatedTask = {
+      taskId: 1,
+      title: "Updated Task",
+      description: "Updated Task Description",
+      status: "In Progress",
+      userId: 1,
+      categoryId: 1,
+    };
 
-//     expect(response.status).toBe(200);
-//     expect(response.body).toEqual({
-//       message: "Task updated successfully",
-//     });
-//   });
+    taskController.updateTask.mockResolvedValue([1]);
 
-//   it("should delete a task", async () => {
-//     taskController.deleteTask.mockResolvedValue(1); // 1 indicates the task was deleted
+    const response = await request(app)
+      .put("/tasks/1")
+      .set("Authorization", `Bearer ${mockToken}`)
+      .send(updatedTask);
 
-//     const response = await request(app).delete("/tasks/1");
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      message: "Task updated successfully",
+    });
+  });
 
-//     expect(response.status).toBe(200);
-//     expect(response.body).toEqual({ message: "Task deleted successfully" });
-//   });
+  it("should delete a task", async () => {
+    taskController.deleteTask.mockResolvedValue(1);
 
-//   it("should return 404 if task not found", async () => {
-//     taskController.getTaskById.mockResolvedValue(null);
+    const response = await request(app)
+      .delete("/tasks/1")
+      .set("Authorization", `Bearer ${mockToken}`);
 
-//     const response = await request(app).get("/tasks/999");
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ message: "Task deleted successfully" });
+  });
 
-//     expect(response.status).toBe(404);
-//     expect(response.body).toEqual({ message: "Task not found" });
-//   });
+  it("should return 404 if task not found", async () => {
+    taskController.getTaskById.mockResolvedValue(null);
 
-//   it("should return error if task creation fails", async () => {
-//     const newTask = {
-//       title: "New Task",
-//       description: "New Task Description",
-//       status: "Pending",
-//       userId: 1,
-//       categoryId: 1,
-//     };
+    const response = await request(app)
+      .get("/tasks/999")
+      .set("Authorization", `Bearer ${mockToken}`);
 
-//     taskController.createTask.mockRejectedValue(new Error("Database Error"));
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ message: "Task not found" });
+  });
 
-//     const response = await request(app).post("/tasks/create").send(newTask);
+  it("should return error if task creation fails", async () => {
+    const newTask = {
+      title: "New Task",
+      description: "New Task Description",
+      status: "Pending",
+      userId: 1,
+      categoryId: 1,
+    };
 
-//     expect(response.status).toBe(500);
-//     expect(response.body).toEqual({ message: "Failed to create task" });
-//   });
-// });
+    taskController.createTask.mockRejectedValue(new Error("Database Error"));
+
+    const response = await request(app)
+      .post("/tasks/create")
+      .set("Authorization", `Bearer ${mockToken}`)
+      .send(newTask);
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ message: "Failed to create task" });
+  });
+});

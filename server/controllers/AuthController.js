@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
-
 import { generateToken } from "../security/jwt-util.js";
 
 export const login = async (req, res) => {
@@ -15,7 +14,6 @@ export const login = async (req, res) => {
       return res.status(400).send({ message: "Password is required" });
     }
 
-    // Find user by email
     const user = await prisma.user.findUnique({
       where: {
         email: req.body.email,
@@ -26,7 +24,6 @@ export const login = async (req, res) => {
       return res.status(404).send({ message: "User not found" });
     }
 
-    // Compare password using bcrypt
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).send({ message: "Invalid credentials" });
@@ -50,22 +47,6 @@ export const login = async (req, res) => {
     res.status(500).json({ error: "Failed to login" });
   }
 };
-
-// export const init = async (req, res) => {
-//   try {
-//     const user = req.user;
-//     delete user.password;
-//     res.status(201).send({
-//       data: user,
-//       message: "successfully fetched current user",
-//     });
-//   } catch (e) {
-//     console.error("Error in init:", e);
-//     res
-//       .status(500)
-//       .json({ error: "Failed to fetch users", details: e.message });
-//   }
-// };
 
 export const init = async (req, res) => {
   try {
