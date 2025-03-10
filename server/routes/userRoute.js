@@ -16,7 +16,7 @@ router.post("/", create);
 
 router.put("/", update);
 router.put("/deleteAccount", authenticateToken, deleteAccount);
-router.put("/:id", deleteUserbyId);
+router.put("/delete/:id", deleteUserbyId);
 router.get("/", authenticateToken, getAllUsers);
 router.get("/team", authenticateToken, getUsersbyTeam);
 router.get("/:id", authenticateToken, getUserById);
