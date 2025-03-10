@@ -2,7 +2,8 @@
 
 Flow Domain is a **PERN-stack** project management web application designed to enhance collaboration and task tracking. It features **Board View, List View, and Project Management**, allowing teams to work efficiently with real-time updates and streamlined workflows.
 
-![image](https://github.com/user-attachments/assets/f1ad0132-6a64-4e1a-a206-ed58277cc715)
+![image](https://github.com/user-attachments/assets/e123cc73-9c0e-4f7a-bd14-bb92c1927bda)
+
 
 ## Features
 
