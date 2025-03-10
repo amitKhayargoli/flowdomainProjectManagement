@@ -4,7 +4,7 @@ import sc from "../images/sc.png";
 
 const List = ({ version, date, description, features, img }) => {
   return (
-    <div className="text-white flex flex-col gap-2 py-20 border-b-[0.5px] border-b-gray-500">
+    <div className="text-white flex flex-col gap-2 py-20 border-b-[0.5px] border-b-gray-500  ">
       <img src={img} alt="" />
 
       <h1 className="text-3xl font-bold">{version}</h1>
@@ -65,7 +65,7 @@ const Changelog = () => {
   ];
 
   return (
-    <div className="h-full w-full bg-black flex flex-col">
+    <div className="min-h-[100vh] w-full bg-black flex flex-col">
       <HomeNav></HomeNav>
 
       <h1 className="text-white text-center text-3xl md:text-6xl font-bold mt-10">
