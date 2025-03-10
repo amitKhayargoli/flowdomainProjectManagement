@@ -178,6 +178,7 @@ const ModalNewProject = ({ isOpen, onClose }) => {
             id="file-upload"
             className="hidden"
             type="file"
+            accept="image/*"
             name="file-upload"
             onChange={handleImageUpload}
           />

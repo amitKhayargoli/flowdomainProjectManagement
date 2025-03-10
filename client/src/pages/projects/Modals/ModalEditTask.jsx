@@ -7,6 +7,13 @@ import ReactDOM from "react-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 
+export const Status = {
+  ToDo: "To do",
+  WorkInProgress: "Work In Progress",
+  UnderReview: "Under Review",
+  Completed: "Completed",
+};
+
 export const Priority = {
   High: "High",
   Medium: "Medium",
@@ -206,9 +213,9 @@ const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
             <div className="flex flex-col space-y-2">
               <button
                 type="submit"
-                className="cursor-pointer flex w-full justify-center rounded-md border bg-blue-600 border-transparent px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none"
+                className={`focus-offset-2 mt-4 flex w-full justify-center rounded-md border  bg-blue-600 border-transparent  px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 `}
               >
-                Update
+                Update Task
               </button>
               <button
                 onClick={handleDeleteTask}
