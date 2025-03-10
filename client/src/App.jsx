@@ -22,6 +22,7 @@ import High from "./pages/High";
 import Medium from "./pages/Medium";
 import Low from "./pages/Low";
 import Backlog from "./pages/Backlog";
+import Blog from "./pages/Blog";
 
 function App() {
   return (
@@ -51,6 +52,8 @@ function App() {
           <Route element={<ProtectedRoute roleRequired={"admin"} />}>
             <Route path="/Admin" element={<AdminPage />}>
               <Route path="users" element={<AdminUsers />}></Route>
+              <Route path="blog" element={<Blog />}></Route>
+              <Route path="projects" element={<Projects />}></Route>
             </Route>
           </Route>
         </Routes>

@@ -1,7 +1,14 @@
 import axios from "axios";
-import { getUsersbyTeam } from "../../server/controllers/userController";
+import {
+  getAllUsers,
+  getUsersbyTeam,
+} from "../../server/controllers/userController";
 import { getCurrentUserProjectTeams } from "../../server/controllers/projectTeamcontroller";
 import { getUserTasks } from "../../server/controllers/taskController";
+import {
+  deleteProject,
+  getAllProjects,
+} from "../../server/controllers/projectController";
 
 const API_BASE_URL = "http://localhost:5000";
 
@@ -27,6 +34,31 @@ export const api = {
     }
   },
 
+  //Admin
+  getAllProjects: async (req) => {
+    try {
+      if (!token) {
+        throw new Error("Authorization token is missing.");
+      }
+
+      const userRole = req.user.role;
+
+      if (userRole !== "admin") {
+        throw new Error("Access denied. Admins only.");
+      }
+
+      const response = await axios.get(`${API_BASE_URL}/projects/all`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      throw error;
+    }
+  },
+
   createProject: async (projectData) => {
     try {
       const response = await axios.post(
@@ -41,6 +73,60 @@ export const api = {
       return response.data;
     } catch (error) {
       console.error("Error creating project:", error);
+      throw error;
+    }
+  },
+
+  updateProject: async (projectId, projectData) => {
+    try {
+      const response = await axios.put(
+        `${API_BASE_URL}/projects/${projectId}`,
+        projectData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error updating project:", error);
+      throw error;
+    }
+  },
+
+  deleteProject: async (projectId) => {
+    try {
+      const response = await axios.put(
+        `${API_BASE_URL}/projects/delete/${projectId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting project:", error);
+      throw error;
+    }
+  },
+
+  deleteUserbyId: async (userId) => {
+    try {
+      const response = await axios.put(
+        `${API_BASE_URL}/api/user/delete/${userId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting user by id:", error);
       throw error;
     }
   },
@@ -71,6 +157,20 @@ export const api = {
       return response.data;
     } catch (error) {
       console.error("Error fetching users by team:", error);
+      throw error;
+    }
+  },
+
+  getAllUsers: async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/user`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching all users:", error);
       throw error;
     }
   },
