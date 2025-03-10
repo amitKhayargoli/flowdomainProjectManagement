@@ -23,19 +23,19 @@ Flow Domain is a **PERN-stack** project management web application designed to e
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/flowdomain.git
-   cd flowdomain
+   git clone https://github.com/amitKhayargoli/flowdomainProjectManagement.git
+   cd flowdomainProjectManagement
    ```
 
 2. **Install Dependencies**
    - Install backend dependencies:
      ```bash
-     cd backend
+     cd server
      npm install
      ```
    - Install frontend dependencies:
      ```bash
-     cd ../frontend
+     cd ../client
      npm install
      ```
 
@@ -48,13 +48,13 @@ Flow Domain is a **PERN-stack** project management web application designed to e
 
 4. **Run the Backend Server**
    ```bash
-   cd backend
+   cd server
    npm start
    ```
 
 5. **Run the Frontend**
    ```bash
-   cd ../frontend
+   cd ../client
    npm start
    ```
 
