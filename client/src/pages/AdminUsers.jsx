@@ -21,7 +21,7 @@ const AdminUsers = () => {
   // Function to fetch user data
   const getUserData = async () => {
     try {
-      const response = await api.getUsersbyTeam();
+      const response = await api.getAllUsers();
       const users = response.data;
       const rows = users.map((user) => ({
         id: user.userId,
@@ -37,7 +37,7 @@ const AdminUsers = () => {
 
   const handleDeleteUser = async (userId) => {
     try {
-      await api.deleteUser(userId);
+      await api.deleteUserbyId(userId);
       setUserData((prevUsers) =>
         prevUsers.filter((user) => user.id !== userId)
       );
@@ -82,7 +82,7 @@ const AdminUsers = () => {
   ];
 
   return (
-    <div className="flex flex-col h-[100vh] bg-white items-center !p-8 dark:bg-black">
+    <div className="flex flex-col  bg-white items-center !p-8 dark:bg-black">
       <h2 className="!text-3xl font-bold mb-4 dark:text-white">Users</h2>
       <Box
         sx={{

@@ -24,6 +24,7 @@ import {
   X,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom"; // Use react-router-dom for navigation
+import avatar from "../images/avatar.png";
 
 const Sidebar = () => {
   const [projects, setProjects] = useState([]);
@@ -31,30 +32,35 @@ const Sidebar = () => {
   const [showPriority, setShowPriority] = useState(true);
   const [currentUser, setCurrentUser] = useState([]);
 
+  const fetchCurrentUser = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found in localStorage");
+      return;
+    }
+
+    try {
+      const response = await axios.get("http://localhost:5000/api/auth/init", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const id = Number(response.data.data.userId);
+
+      const responseUser = await axios.get(
+        `http://localhost:5000/api/user/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      console.log(responseUser.data.data);
+
+      setCurrentUser(responseUser.data.data);
+    } catch (error) {
+      console.error("Error fetching current user:", error);
+    }
+  };
   useEffect(() => {
-    const fetchCurrentUser = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.error("No token found in localStorage");
-        return;
-      }
-
-      try {
-        const response = await axios.get(
-          "http://localhost:5000/api/auth/init",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        setCurrentUser(response.data.data);
-      } catch (error) {
-        console.error("Error fetching current user:", error);
-      }
-    };
-
     fetchCurrentUser();
   }, []);
 
@@ -79,7 +85,7 @@ const Sidebar = () => {
           Authorization: `Bearer ${token}`, // Include the token in the Authorization header
         },
       });
-      setProjects(response.data); // Set the fetched projects data
+      setProjects(response.data.projects); // Set the fetched projects data
     } catch (error) {
       console.error("Error fetching projects:", error);
     }
@@ -100,7 +106,7 @@ const Sidebar = () => {
     <div className={sidebarClassNames}>
       <div className="flex h-[100%] w-full flex-col justify-start">
         <div className="z-50 flex min-h-[56px] w-64 items-center justify-between bg-white px-6 pt-3 dark:bg-black">
-          <div className="text-2xl font-bold text-[#00a6ff] dark:text-white">
+          <div className="text-2xl font-bold text-[#00A6FF] dark:text-white">
             <h1>Flow Domain ™</h1>
           </div>
 
@@ -116,18 +122,11 @@ const Sidebar = () => {
           )}
         </div>
 
-        {/* {TEAM} */}
-
         <div className="flex items-center gap-3 border-y-[1.5px] border-gray-200 px-6 py-2 rounded-md  dark:border-0 ">
           <img
-            className="max-h-12 object-cover"
-            // src="https://e7.pngegg.com/pngimages/550/997/png-clipart-user-icon-foreigners-avatar-child-face.png"
-            // src="https://img.freepik.com/premium-vector/cute-cartoon-boy-vector-illustration-isolated-white-background_1151-83652.jpg"
+            className="object-cover rounded-full  w-15   h-15 overflow-hidden"
             alt="Logo"
-            src="https://preview.redd.it/no-spoilers-new-season-2-image-without-text-fan-edit-v0-t0u718ort64d1.png?width=640&crop=smart&auto=webp&s=362f814491baee7c942af01213f41c9b05ffb2e1"
-            width={40}
-            height={60}
-            style={{ borderRadius: "50%" }}
+            src={currentUser.profilePictureUrl || avatar}
           />
           <div>
             <h3 className="text-md font-bold tracking-wide dark:text-white">
