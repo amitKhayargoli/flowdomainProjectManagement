@@ -69,7 +69,7 @@ Flow Domain is a **PERN-stack** project management web application designed to e
 | POST   | `/projects`          | Create a new project          |
 | GET    | `/tasks/:projectId`  | Get tasks for a project       |
 | POST   | `/tasks`             | Create a new task             |
-| GET    | `/users`             | Fetch user details            |
+| GET    | `/api/user`             | Fetch user details            |
 | POST   | `/auth/login`        | User login                    |
 
 ## Contributing
