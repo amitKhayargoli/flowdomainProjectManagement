@@ -5,7 +5,6 @@ dotenv.config();
 // Middleware to verify JWT token
 export function authenticateToken(req, res, next) {
   const authorizationHeader = req.header("Authorization");
-  console.log("Authorization Header:", authorizationHeader);
 
   // If there’s no Authorization header, stop the request here
   if (!authorizationHeader) {
@@ -16,7 +15,6 @@ export function authenticateToken(req, res, next) {
 
   // Split the header to get the token (e.g., Bearer <token>)
   const token = authorizationHeader.split(" ")[1];
-  console.log("Token:", token);
 
   // If no token, return unauthorized
   if (!token) {

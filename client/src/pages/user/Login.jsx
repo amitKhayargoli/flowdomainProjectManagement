@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import LoginLogo from "../../images/LoginLogo.png";
 import github from "../../images/github.png";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { ArrowLeft, User } from "lucide-react";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import axios from "axios"; // Add this import
+import axios from "axios";
 import { toast } from "react-toastify";
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -50,15 +50,19 @@ const Login = () => {
         if (inviteToken) {
           navigate(`/invite?token=${inviteToken}`);
           localStorage.removeItem("InviteToken");
+          window.location.reload();
         } else {
           if (localStorage.getItem("joinedProject")) {
             navigate("/workspace/projects");
+            window.location.reload();
           } else {
             navigate(
               response.data.data.role === "user"
-                ? "/workspace/projects"
-                : "/Admin/"
+                ? "/workspace/dashboard"
+                : "/Admin/projects"
             );
+
+            window.location.reload();
           }
         }
       }
@@ -75,7 +79,7 @@ const Login = () => {
     "h-12 w-full xl:text-xl md:text-[14px] md:w-[55%] xl:w-[55%] bg-black border-1 border-[#454549] !pl-6 text-xl !my-2 rounded-md focus:outline-none";
 
   return (
-    <div className="bg-black h-screen xl:h-screen !p-10 flex flex-col">
+    <div className="bg-black h-screen xl:h-screen !p-10 flex flex-col custom-gradient">
       <div className="flex justify-between !px-12 text-white">
         <h1
           onClick={() => {
@@ -97,7 +101,11 @@ const Login = () => {
 
       <div className="h-full flex md:flex-row flex-col">
         <div className="xl:flex flex-col xl:p-20 items-center justify-center xl:h-full md:h-[80%] md:w-[40%]">
-          <img className="w-full h-full" src={LoginLogo} alt="" />
+          <img
+            className="w-full h-full object-contain"
+            src={LoginLogo}
+            alt=""
+          />
         </div>
 
         <form
@@ -142,7 +150,10 @@ const Login = () => {
               OR CONTINUE WITH
             </h1>
 
-            <button className="flex gap-1 items-center justify-center h-12 font-normal text-white w-full md:w-[55%] border-1 border-[#454549] xl:w-[55%] transition-all ease-in-out duration-400 bg-black hover:bg-white hover:text-black !pl-6 text-xl !my-2 rounded-md cursor-pointer">
+            <button
+              disabled
+              className="flex gap-1 items-center justify-center h-12 font-normal text-white w-full md:w-[55%] border-1 border-[#454549] xl:w-[55%] transition-all ease-in-out duration-400 bg-black hover:bg-white hover:text-black !pl-6 text-xl !my-2 rounded-md cursor-pointer"
+            >
               <img src={github} className="w-8 h-8 " alt="Github" />
               Github
             </button>

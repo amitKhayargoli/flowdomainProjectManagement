@@ -53,8 +53,6 @@ const Sidebar = () => {
         }
       );
 
-      console.log(responseUser.data.data);
-
       setCurrentUser(responseUser.data.data);
     } catch (error) {
       console.error("Error fetching current user:", error);
@@ -63,8 +61,6 @@ const Sidebar = () => {
   useEffect(() => {
     fetchCurrentUser();
   }, []);
-
-  console.log("Current User", currentUser);
 
   const dispatch = useDispatch();
   const isSidebarCollapsed = useSelector(
@@ -93,10 +89,13 @@ const Sidebar = () => {
 
   useEffect(() => {
     fetchProjects();
-  }, []);
 
-  // console.log(projects);
-  console.log("Projects fetched", projects);
+    const fetchData = setInterval(() => {
+      fetchProjects();
+    }, 2000);
+
+    return () => clearInterval(fetchData);
+  }, [fetchProjects]);
 
   const sidebarClassNames = `fixed flex flex-col h-[100%] justify-between shadow-xl transition-all duration-300 h-full z-40 dark:bg-black overflow-y-auto bg-white 
   ${isSidebarCollapsed ? "w-0 hidden" : "w-64"}
@@ -140,7 +139,8 @@ const Sidebar = () => {
         </div>
 
         <nav className="z-10 w-full">
-          <SidebarLink icon={HomeIcon} label="Projects" href="projects" />
+          <SidebarLink icon={HomeIcon} label="Dashboard" href="dashboard" />
+          <SidebarLink icon={Briefcase} label="Projects" href="projects" />
           {/* <SidebarLink icon={Briefcase} label="Timeline" href="timeline" /> */}
           {/* <SidebarLink icon={Search} label="Search" href="search" />   */}
 

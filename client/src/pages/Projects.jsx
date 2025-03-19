@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import Header from "../components/Header";
 import ModalNewProject from "./projects/Modals/ModalNewProject";
-
-import { LucidePlus, Search } from "lucide-react";
+import { EditIcon, LucidePlus, Search } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ModalEditProject from "./projects/Modals/ModalEditProject";
@@ -39,14 +38,13 @@ const Projects = () => {
         }
       );
 
-      console.log(responseUser.data.data);
-
       setCurrentUser(responseUser.data.data);
       setUserRole(responseUser.data.data.role);
     } catch (error) {
       console.error("Error fetching current user:", error);
     }
   };
+
   useEffect(() => {
     fetchCurrentUser();
   }, []);
@@ -76,17 +74,39 @@ const Projects = () => {
   };
 
   useEffect(() => {
-    console.log(userRole);
+    fetchProjects();
     if (userRole) {
-      fetchProjects();
-    }
-  }, [userRole]);
+      const fetchData = setInterval(() => {
+        fetchProjects();
+      }, 2000);
 
-  const filteredProjects = projects.filter((project) =>
-    project.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+      return () => clearInterval(fetchData);
+    }
+  }, [fetchProjects]);
+
+  const filteredProjects = useMemo(() => {
+    return projects.filter((project) =>
+      project.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [projects, searchQuery]);
 
   const bgstyles = "bg-[#f9f9f9] dark:bg-[#0d0d0d]";
+
+  const handleProjectClick = (projectId) => {
+    if (userRole !== "admin") {
+      navigate(`${projectId}`);
+    } else {
+      setProjectId(projectId);
+      setIsEditProjectOpen(true);
+    }
+  };
+
+  const handleEditIconClick = (e, projectId) => {
+    e.stopPropagation(); // Prevent triggering the parent onClick
+    setProjectId(projectId);
+    setIsEditProjectOpen(true);
+  };
+
   return (
     <>
       <ModalNewProject
@@ -99,9 +119,9 @@ const Projects = () => {
         fetchProjects={fetchProjects}
         isOpen={isEditProjectOpen}
         onClose={() => setIsEditProjectOpen(false)}
-      ></ModalEditProject>
+      />
 
-      <div className={`mx-5 p-8 rounded-xl  mt-0 flex flex-col ${bgstyles}`}>
+      <div className={`mx-5 p-8 rounded-xl mt-0 flex flex-col ${bgstyles}`}>
         <div className="mb-6 flex w-full h-6 items-center justify-between">
           <div>
             <h1 className={`text-3xl font-bold dark:text-white`}>Projects</h1>
@@ -122,6 +142,7 @@ const Projects = () => {
           </div>
         </div>
 
+        {/* Search bar */}
         <div className="mb-8 mt-4">
           <div className="flex items-center gap-2 dark:text-white border-1 dark:border-gray-600 border-gray-300 rounded-md focus:outline-none p-2">
             <Search width={20} className="" />
@@ -135,23 +156,14 @@ const Projects = () => {
           </div>
         </div>
 
+        {/* Project grid */}
         <div className="grid xl:grid-cols-3 gap-8">
           {filteredProjects.length === 0 ? (
             <div className="text-xl dark:text-white">No projects found</div>
           ) : (
             filteredProjects.map((project) => (
               <div
-                onClick={() => {
-                  {
-                    if (userRole !== "admin") {
-                      navigate(`${project.id}`);
-                    } else {
-                      //new modal to edit project
-                      setProjectId(project.id);
-                      setIsEditProjectOpen(true);
-                    }
-                  }
-                }}
+                onClick={() => handleProjectClick(project.id)} // Project click
                 className="rounded-xl overflow-hidden h-[300px] hover:opacity-96 dark:hover:opacity-60 cursor-pointer transition duration-200 ease-out"
                 key={project.id}
               >
@@ -167,6 +179,12 @@ const Projects = () => {
                     <h1 className="dark:text-white text-xl text-white font-bold">
                       {project.name}
                     </h1>
+
+                    {/* Edit Icon */}
+                    <EditIcon
+                      onClick={(e) => handleEditIconClick(e, project.id)} // Edit icon click
+                      className="text-white absolute right-5 bottom-5"
+                    />
                   </div>
                 </div>
               </div>

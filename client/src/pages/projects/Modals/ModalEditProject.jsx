@@ -14,28 +14,32 @@ const ModalEditProject = ({ id, isOpen, onClose, projects, fetchProjects }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileLabel, setFileLabel] = useState("Upload a new project cover");
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    reset,
-    watch,
-    formState: { isValid },
-  } = useForm({ mode: "onChange" });
+  const { register, handleSubmit, setValue } = useForm();
+
+  const currentProject = projects.find((project) => project.id === id);
 
   useEffect(() => {
-    const project = projects.find((project) => project.id === id);
+    if (currentProject) {
+      setProject(currentProject);
 
-    if (project) {
-      setValue("name", project.name || "");
-      setValue("description", project.description || "");
+      setValue("name", currentProject.name || "");
+      setValue("description", currentProject.description || "");
       setValue(
         "startDate",
-        project.startDate ? project.startDate.split("T")[0] : ""
+        currentProject.startDate ? currentProject.startDate.split("T")[0] : ""
       );
-      setValue("endDate", project.endDate ? project.endDate.split("T")[0] : "");
+      setValue(
+        "endDate",
+        currentProject.endDate ? currentProject.endDate.split("T")[0] : ""
+      );
+
+      setFileLabel(
+        currentProject.coverURL
+          ? "Image Uploaded..."
+          : "Upload a new project cover"
+      );
     }
-  }, [projects, setValue, id]);
+  }, [currentProject, setValue]);
 
   const onSubmit = async (data) => {
     const formattedStartDate = formatISO(new Date(data.startDate), {
@@ -45,7 +49,7 @@ const ModalEditProject = ({ id, isOpen, onClose, projects, fetchProjects }) => {
       representation: "complete",
     });
 
-    let imageUrl = project?.coverURL || "";
+    let imageUrl = project?.coverURL;
 
     if (selectedFile) {
       const formData = new FormData();
@@ -78,15 +82,14 @@ const ModalEditProject = ({ id, isOpen, onClose, projects, fetchProjects }) => {
       ...data,
       startDate: formattedStartDate,
       endDate: formattedEndDate,
-      coverURL: imageUrl,
+      coverURL: imageUrl, // Use the updated imageUrl, which might be the old or new one
     };
 
     try {
       await api.updateProject(id, updatedProjectData);
-      //   toast.success("Project updated successfully!");
       fetchProjects();
-      reset(updatedProjectData);
       onClose();
+      toast.success("Project updated successfully!");
     } catch (error) {
       console.error("Error updating project:", error);
       toast.error("Failed to update project!");
@@ -114,7 +117,12 @@ const ModalEditProject = ({ id, isOpen, onClose, projects, fetchProjects }) => {
     }
   };
 
+  const isFormValid = () => {
+    return fileLabel === "Image Uploaded..." || !selectedFile;
+  };
+
   if (!isOpen) return null;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} name="Edit Project">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -163,10 +171,12 @@ const ModalEditProject = ({ id, isOpen, onClose, projects, fetchProjects }) => {
         <div className="flex flex-col space-y-2">
           <button
             type="submit"
-            className={`flex w-full justify-center rounded-md border bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 
-          }`}
+            className={`focus-offset-2 mt-4 flex w-full justify-center rounded-md border bg-blue-600 border-transparent  px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+              !isFormValid() ? "cursor-not-allowed opacity-50" : "opacity-100"
+            }`}
+            disabled={!isFormValid()}
           >
-            Update Project
+            Update project
           </button>
 
           <button

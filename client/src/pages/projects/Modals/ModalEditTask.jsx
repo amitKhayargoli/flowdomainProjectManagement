@@ -3,7 +3,6 @@ import Modal from "../../../components/Modal";
 import { useForm } from "react-hook-form";
 import { formatISO } from "date-fns";
 import { api } from "../../../api";
-import ReactDOM from "react-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 
@@ -23,18 +22,11 @@ export const Priority = {
 
 const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
   const [selectedFile, setSelectedFile] = useState(null);
-  const [fileName, setFileName] = useState("");
   const [fileLabel, setFileLabel] = useState("Add an attachment");
   const { register, handleSubmit, setValue, reset } = useForm();
 
-  const [confirmDelete, setConfirmDelete] = useState(false);
-
-  const [getTaskState, setTaskState] = useState("");
-
   useEffect(() => {
     if (task) {
-      setTaskState(JSON.stringify(task, null, 2));
-
       setValue("title", task.title || "");
       setValue("description", task.description || "");
       setValue("priority", task.priority || "");
@@ -48,12 +40,15 @@ const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
         : "";
       setValue("startDate", formattedStartDate);
       setValue("dueDate", formattedDueDate);
+
+      // Retain the previous image URL (if it exists)
+      if (task.fileURL) {
+        setFileLabel("Image already attached");
+      }
     }
   }, [task, setValue]);
 
   const onSubmit = async (data) => {
-    console.log("Data submitted:", data);
-
     const formattedStartDate = formatISO(new Date(data.startDate), {
       representation: "complete",
     });
@@ -62,8 +57,9 @@ const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
       representation: "complete",
     });
 
-    let imageUrl = "";
+    let imageUrl = task.fileURL; // Default to the existing file URL (if any)
 
+    // Only upload the new file if one has been selected
     if (selectedFile) {
       const formData = new FormData();
       formData.append("file", selectedFile);
@@ -81,8 +77,6 @@ const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
           }
         );
 
-        console.log("Upload Response:", uploadResponse.data);
-
         if (uploadResponse.data?.file?.path) {
           imageUrl = `http://localhost:5000/${uploadResponse.data.file.path}`;
         } else {
@@ -99,27 +93,23 @@ const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
       ...data,
       startDate: formattedStartDate,
       dueDate: formattedEndDate,
-      fileURL: imageUrl,
+      fileURL: imageUrl, // Use the previous image URL if no new image is uploaded
     };
-
-    console.log("Updated Task Data:", updatedTaskData);
 
     api
       .updateTask(task.id, updatedTaskData)
       .then((response) => {
-        console.log("Task updated:", response);
-
         reset();
         onClose();
+        toast.success("Task updated successfully!");
       })
       .catch((err) => {
-        console.log("Error updating task:", err);
         toast.error(err.message);
       });
   };
 
   const handleDeleteTask = () => {
-    api.deleteTask(task.id).then((response) => {
+    api.deleteTask(task.id).then(() => {
       onClose();
     });
   };
@@ -128,16 +118,18 @@ const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
     const file = e.target.files[0];
     if (file) {
       setSelectedFile(file);
-      setFileName(file.name);
       setFileLabel("Image Uploaded...");
+    } else {
+      setSelectedFile(null); // In case file is removed, reset the state
+      setFileLabel("Add an attachment");
     }
   };
 
   const selectStyles =
-    "mb-4 text-md text-gray-600 block w-full rounded border border-gray-300 focus:outline-none px-3 dark:border-none py-2  dark:bg-gray-700 dark:text-white dark:focus:outline-none";
+    "mb-4 text-md text-gray-600 block w-full rounded border border-gray-300 focus:outline-none px-3 dark:border-none py-2 dark:bg-gray-700 dark:text-white dark:focus:outline-none";
 
   const inputStyles =
-    "w-full rounded border mt-1  mb-5 focus:outline-none border-gray-300 p-2 shadow-sm dark:border-none dark:bg-gray-700 dark:text-white dark:focus:outline-none";
+    "w-full rounded border mt-1 mb-5 focus:outline-none border-gray-300 p-2 shadow-sm dark:border-none dark:bg-gray-700 dark:text-white dark:focus:outline-none";
 
   return (
     <>
@@ -145,7 +137,7 @@ const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <input
             type="text"
-            className={`h-8 py-6 text-lg ${inputStyles} `}
+            className={`h-8 py-6 text-lg ${inputStyles}`}
             placeholder="Task Name"
             {...register("title")}
           />
@@ -213,7 +205,7 @@ const ModalEditTask = ({ isOpen, onClose, id, task, fetchTasks }) => {
             <div className="flex flex-col space-y-2">
               <button
                 type="submit"
-                className={`focus-offset-2 mt-4 flex w-full justify-center rounded-md border  bg-blue-600 border-transparent  px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 `}
+                className={`focus-offset-2 mt-4 flex w-full justify-center rounded-md border bg-blue-600 border-transparent px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 `}
               >
                 Update Task
               </button>

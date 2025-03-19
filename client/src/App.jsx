@@ -10,7 +10,7 @@ import Login from "./pages/user/Login";
 import Hero from "./pages/Hero";
 import Signup from "./pages/user/Signup";
 import Projects from "./pages/Projects";
-
+import Blog from "./pages/Blog";
 import ProtectedRoute from "./ProtectedRoute";
 import Changelog from "./pages/Changelog";
 import AdminPage from "./pages/Admin/AdminPage";
@@ -22,7 +22,13 @@ import High from "./pages/High";
 import Medium from "./pages/Medium";
 import Low from "./pages/Low";
 import Backlog from "./pages/Backlog";
-import Blog from "./pages/Blog";
+
+import Pricing from "./components/Pricing";
+import CreateBlog from "./pages/Admin/CreateBlog";
+import BlogPage from "./pages/BlogPage";
+import PricingPage from "./pages/PricingPage";
+import Blogs from "./pages/Admin/Blogs";
+import UpdateBlog from "./pages/Admin/UpdateBlog";
 
 function App() {
   return (
@@ -31,10 +37,12 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/" element={<Hero />} />
           <Route path="/changelog" element={<Changelog />} />
           <Route path="/invite" element={<Invite />} />
-
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/blog" element={<Blog />}></Route>
+          <Route path="/blog/:id" element={<BlogPage />}></Route>
+          <Route path="/" element={<Hero />}></Route>
           <Route element={<ProtectedRoute roleRequired={"user"} />}>
             <Route path="/workspace" element={<DashboardLayout />}>
               <Route path="dashboard" element={<Dashboard />} />
@@ -48,11 +56,12 @@ function App() {
               <Route path="priority/backlog" element={<Backlog />} />
             </Route>
           </Route>
-
           <Route element={<ProtectedRoute roleRequired={"admin"} />}>
             <Route path="/Admin" element={<AdminPage />}>
               <Route path="users" element={<AdminUsers />}></Route>
-              <Route path="blog" element={<Blog />}></Route>
+              <Route path="blogs" element={<Blogs />}></Route>
+              <Route path="blogs/create" element={<CreateBlog />}></Route>
+              <Route path="blogs/:id" element={<UpdateBlog />}></Route>
               <Route path="projects" element={<Projects />}></Route>
             </Route>
           </Route>

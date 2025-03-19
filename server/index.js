@@ -18,8 +18,7 @@ import blogRoutes from "./routes/blogRoute.js";
 dotenv.config();
 const app = express();
 app.use(express.json());
-app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
-app.use(morgan("common"));
+// app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
 app.use("/uploads", express.static("uploads"));
 createUploadsFolder();
@@ -36,7 +35,6 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRouter);
-
 app.use("/api/user", userRouter);
 
 app.use("/api/blog", blogRoutes);
@@ -46,11 +44,6 @@ app.use("/tasks", taskRoutes);
 app.use("/api/file", uploadRouter);
 app.use("/invite", inviteRouter);
 app.use("/api/team", projectTeamRoutes);
-
-app.use((req, res, next) => {
-  console.log(`Request: ${req.method} ${req.path}`);
-  next();
-});
 
 // Server
 const port = 5000;

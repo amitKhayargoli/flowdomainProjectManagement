@@ -87,8 +87,9 @@ const Teams = () => {
 
   console.log("Teams", teamsData);
 
+  // custom-gradient
   return (
-    <div className="flex flex-col bg-white items-center !p-8 dark:bg-black">
+    <div className="flex flex-col bg-white items-center !p-8 dark:bg-black ">
       <h2 className="!text-3xl font-bold mb-4 dark:text-white">Teams</h2>
       <Box
         sx={{

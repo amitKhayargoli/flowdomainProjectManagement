@@ -3,12 +3,14 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSidebar } from "../../redux/globalSlice"; // Adjust the import path as necessary
 import {
+  BookCheckIcon,
   Briefcase,
   Home as HomeIcon,
   Layers as Layers3Icon,
   Lock as LockIcon,
   LucideLayoutDashboard,
   MessageCircleCodeIcon,
+  Pencil,
   Search,
   Settings,
   ShieldAlert,
@@ -43,8 +45,6 @@ const AdminSidebar = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      console.log(responseUser.data.data);
 
       setCurrentUser(responseUser.data.data);
     } catch (error) {
@@ -101,21 +101,22 @@ const AdminSidebar = () => {
           </div>
         </div>
         <nav className="z-10 w-full">
-          <SidebarLink
-            icon={LucideLayoutDashboard}
-            label="Dashboard"
-            href="dashboard"
-          />
           <SidebarLink icon={Briefcase} label="Projects" href="Projects" />
 
           <SidebarLink icon={User} label="Users" href="users" />
-          <SidebarLink icon={User} label="Blog" href="blog" />
+
+          <SidebarLink icon={BookCheckIcon} label="Blogs" href="blogs" />
           <SidebarLink
+            icon={Pencil}
+            label="Write a blog post"
+            href="blogs/create"
+          />
+          {/* <SidebarLink
             icon={MessageCircleCodeIcon}
             label="Comments"
             href="comments"
           />
-          <SidebarLink icon={Users} label="Changelog" href="teams" />
+          <SidebarLink icon={Users} label="Changelog" href="changelog" /> */}
         </nav>
       </div>
     </div>
@@ -125,8 +126,8 @@ const AdminSidebar = () => {
 const SidebarLink = ({ href, icon: Icon, label }) => {
   const location = useLocation();
   const isActive =
-    location.pathname === `/workspace/${href}` ||
-    (location.pathname === "/" && href === "/workspace");
+    location.pathname === `/Admin/${href}` ||
+    (location.pathname === "/" && href === "/Admin");
 
   return (
     <Link to={href} className="w-full">

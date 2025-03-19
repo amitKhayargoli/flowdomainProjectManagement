@@ -75,8 +75,6 @@ export default function AccountMenu() {
         }
       );
 
-      console.log(responseUser.data.data);
-
       setCurrentUser(responseUser.data.data);
     } catch (error) {
       console.error("Error fetching current user:", error);
@@ -94,8 +92,6 @@ export default function AccountMenu() {
   }, [currentUser, setValue]);
 
   const onSubmit = async (data) => {
-    console.log("Data submitted:", data);
-
     let imageUrl = "";
 
     if (selectedFile) {
@@ -114,8 +110,6 @@ export default function AccountMenu() {
             },
           }
         );
-
-        console.log("Upload Response:", uploadResponse.data);
 
         if (uploadResponse.data?.file?.path) {
           imageUrl = `http://localhost:5000/${uploadResponse.data.file.path}`;
@@ -137,7 +131,6 @@ export default function AccountMenu() {
     api
       .updateUser(updatedUserData)
       .then((response) => {
-        console.log("Full Update User Response:", response);
         if (response) {
           toast.success("Profile updated successfully");
           fetchCurrentUser();
@@ -153,7 +146,9 @@ export default function AccountMenu() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    setCurrentUser({});
     navigate("/Login");
+    localStorage.removeItem("InviteToken");
     setImage("");
   };
 

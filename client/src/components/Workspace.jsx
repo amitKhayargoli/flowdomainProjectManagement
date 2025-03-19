@@ -32,8 +32,6 @@ const Workspace = () => {
     }
   }, [isDarkMode]);
 
-  console.log(isDarkMode);
-
   return (
     <div className="flex min-h-screen w-full bg-gray-50 text-gray-900">
       <Sidebar />

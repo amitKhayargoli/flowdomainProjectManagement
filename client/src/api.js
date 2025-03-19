@@ -1,14 +1,4 @@
 import axios from "axios";
-import {
-  getAllUsers,
-  getUsersbyTeam,
-} from "../../server/controllers/userController";
-import { getCurrentUserProjectTeams } from "../../server/controllers/projectTeamcontroller";
-import { getUserTasks } from "../../server/controllers/taskController";
-import {
-  deleteProject,
-  getAllProjects,
-} from "../../server/controllers/projectController";
 
 const API_BASE_URL = "http://localhost:5000";
 
@@ -391,6 +381,78 @@ export const api = {
       console.log("Invite Token:", response.data.inviteToken);
     } catch (error) {
       console.error("Error generating invite:", error);
+    }
+  },
+
+  createBlog: async (data) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/api/blog`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error creating blog:", error);
+      throw error;
+    }
+  },
+
+  getAllBlogs: async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/blog`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching all blogs:", error);
+      throw error;
+    }
+  },
+
+  getBlogById: async (id) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/blog/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching blog by ID:", error);
+      throw error;
+    }
+  },
+
+  deleteBlog: async (id) => {
+    try {
+      await axios.put(
+        `${API_BASE_URL}/api/blog/delete/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error deleting blog:", error);
+      throw error;
+    }
+  },
+  updateBlog: async (id, updatedBlogData) => {
+    try {
+      const response = await axios.put(
+        `${API_BASE_URL}/api/blog/${id}`,
+        updatedBlogData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error updating blog:", error);
+      throw error;
     }
   },
 };

@@ -36,14 +36,12 @@ const Project = () => {
     fetchProjectData();
   }, [id]);
 
-  console.log("projectbyId", project);
-
   if (!project) {
     return <div>Loading...</div>;
   }
-
+  // custom-gradient
   return (
-    <div className="h-full custom-gradient">
+    <div className="h-full ">
       <ModalNewTask
         isOpen={isNewTaskOpen}
         onClose={() => setIsNewTaskOpen(false)}

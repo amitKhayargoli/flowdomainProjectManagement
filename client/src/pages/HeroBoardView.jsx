@@ -54,7 +54,7 @@ const HeroBoardView = ({ id, setIsNewTaskOpen }) => {
       initial={{ opacity: 0, y: 60 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 1 }}
-      viewport={{ once: false, amount: 1 }}
+      viewport={{ once: false, amount: 0.5 }}
     >
       <DndProvider backend={HTML5Backend}>
         <div className="w-full grid grid-cols-1 gap-4 md:grid-cols-4">

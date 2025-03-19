@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import HomeNav from "../components/HomeNav";
 import { BellDotIcon, Circle, Search, Settings } from "lucide-react";
@@ -7,13 +7,19 @@ import "./Hero.css";
 import HomeSidebar from "../components/HomeSidebar";
 import TabsHeroSection from "./TabsHeroSection";
 import HeroBoardView from "./HeroBoardView";
+import Pricing from "../components/Pricing";
+import Features from "../components/Features";
+import ListView from "./ListView";
+import CustomerReviews from "./CustomerReviews";
+import Footer from "./footer";
 
 const Hero = () => {
+  const [ActiveTab, setActiveTab] = useState(null);
   return (
     <div className="bg-black min-h-screen">
       <HomeNav />
 
-      <div className="flex flex-col items-center mt-20 gap-6">
+      <div className="flex flex-col items-center mt-20 gap-6 my-8">
         <div className="text-center">
           <h1 className="text-4xl md:text-6xl font-semibold text-white">
             The best platform for
@@ -38,9 +44,9 @@ const Hero = () => {
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        viewport={{ once: false, amount: 0.5}}
+        viewport={{ once: false, amount: 0.4 }}
       >
-        <div className="px-2 xl:px-50 min-h-screen mt-15">
+        <div className="px-2 xl:mx-30 min-h-screen mt-15 w-full">
           <div className="rounded-xl border-gray-800 border-2">
             <div className="px-5 w-full flex md:flex-row-reverse justify-between h-[50px] border-b-2 border-gray-800 items-center py-6">
               <div className="hidden md:flex gap-3 flex-row-reverse">
@@ -61,14 +67,14 @@ const Hero = () => {
                 />
               </div>
 
-              <div className="flex items-center bg-gray-800 px-2 sm:px-15 py-2 rounded-md mx-auto">
+              <div className="flex items-center bg-gray-800 px-2 sm:px-15 py-2 rounded-md mx-auto ">
                 <h1 className="text-white">
                   https://www.flowdomain.com/workspace
                 </h1>
               </div>
             </div>
 
-            <div className="xl:h-[600px] flex md:w-full">
+            <div className="md:h-[700px] flex md:w-full">
               <HomeSidebar />
               <div className="flex flex-1 text-white flex-col custom-gradient sm:p-8">
                 <div className="flex items-center mb-5">
@@ -127,6 +133,12 @@ const Hero = () => {
           </div>
         </div>
       </motion.div>
+      <Features></Features>
+
+      <CustomerReviews></CustomerReviews>
+      <Pricing></Pricing>
+
+      <Footer></Footer>
     </div>
   );
 };

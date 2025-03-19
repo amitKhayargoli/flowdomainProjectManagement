@@ -7,7 +7,6 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 const ModalNewProject = ({ isOpen, onClose }) => {
-  console.log("Modal isOpen state:", isOpen);
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileName, setFileName] = useState("");
   const [fileLabel, setFileLabel] = useState("Upload a project cover");
@@ -60,8 +59,6 @@ const ModalNewProject = ({ isOpen, onClose }) => {
     const token = localStorage.getItem("token");
     if (!projectName || !startDate || !endDate) return;
 
-    // setIsLoading(true); // Set loading state to true
-
     const formattedStartDate = formatISO(new Date(startDate), {
       representation: "complete",
     });
@@ -88,7 +85,6 @@ const ModalNewProject = ({ isOpen, onClose }) => {
           }
         );
 
-        console.log("Upload Response:", uploadResponse.data);
         imageUrl = "http://localhost:5000/" + uploadResponse.data.file.path;
 
         if (!imageUrl) {
@@ -120,7 +116,13 @@ const ModalNewProject = ({ isOpen, onClose }) => {
   };
 
   const isFormValid = () => {
-    return projectName && description && startDate && endDate;
+    return (
+      projectName &&
+      description &&
+      startDate &&
+      endDate &&
+      fileLabel == "Image Uploaded..."
+    );
   };
 
   const inputStyles =

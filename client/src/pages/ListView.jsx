@@ -19,13 +19,12 @@ const ListView = ({ id, setIsNewTaskOpen }) => {
   useEffect(() => {
     fetchTasks();
 
-    // const fetchData = setInterval(() => {
-    //   fetchTasks();
-    // }, 2000);
+    const fetchData = setInterval(() => {
+      fetchTasks();
+    }, 2000);
 
-    // return () => clearInterval(fetchData);
+    return () => clearInterval(fetchData);
   }, [fetchTasks]);
-  // console.log(tasks);
 
   return (
     <div className="w-full px-4 pb-8 py-5 xl:px-6">

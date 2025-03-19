@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   BarChart,
   LineChart,
@@ -9,171 +10,157 @@ import {
   Line,
 } from "recharts";
 
-const projectData = [
-  { month: "Jan", projects: 4 },
-  { month: "Feb", projects: 6 },
-  { month: "Mar", projects: 8 },
-  { month: "Apr", projects: 5 },
-  { month: "May", projects: 7 },
-  { month: "Jun", projects: 9 },
-];
-
-const statsData = {
-  totalProjects: 24,
-  activeTasks: 67,
-  activeUsers: 12,
-};
+import { api } from "../api";
 
 const Dashboard = () => {
+  const [totalProjects, setTotalProjects] = useState("");
+  const [projects, setProjects] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [activeTasks, setActiveTasks] = useState("");
+  const [activeUsers, setActiveUsers] = useState("");
+  const [projectData, setProjectData] = useState([
+    { month: "Jan", projects: 0 },
+    { month: "Feb", projects: 0 },
+    { month: "Mar", projects: 0 },
+    { month: "Apr", projects: 0 },
+    { month: "May", projects: 0 },
+    { month: "Jun", projects: 0 },
+  ]);
+
+  const [taskData, setTaskData] = useState([
+    { Status: "High", tasks: 0 },
+    { Status: "Medium", tasks: 0 },
+    { Status: "Low", tasks: 0 },
+    { Status: "Backlog", tasks: 0 },
+  ]);
+
+  // Fetch projects and update project data
+  const fetchProjectCount = async () => {
+    try {
+      const response = await api.getProjects();
+      const projects = response.projects;
+      setProjects(projects);
+      setTotalProjects(projects.length);
+
+      const monthCounts = {
+        Jan: 0,
+        Feb: 0,
+        Mar: 0,
+        Apr: 0,
+        May: 0,
+        Jun: 0,
+      };
+
+      projects.forEach((project) => {
+        const startMonth = new Date(project.startDate).toLocaleString(
+          "default",
+          {
+            month: "short",
+          }
+        );
+        if (monthCounts[startMonth] !== undefined) {
+          monthCounts[startMonth]++;
+        }
+      });
+
+      setProjectData((prevData) =>
+        prevData.map((item) => ({
+          ...item,
+          projects: monthCounts[item.month] || 0,
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching project count:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProjectCount();
+  }, []);
+
+  // Fetch tasks and update task data
+  const fetchTaskCount = async () => {
+    try {
+      const tasks = await api.getUserTasks();
+      setTasks(tasks);
+      setActiveTasks(tasks.length);
+
+      const taskCounts = {
+        High: 0,
+        Medium: 0,
+        Low: 0,
+        Backlog: 0,
+      };
+
+      tasks.forEach((task) => {
+        const priority = task.priority;
+        if (taskCounts[priority] !== undefined) {
+          taskCounts[priority]++;
+        }
+      });
+
+      setTaskData((prevData) =>
+        prevData.map((item) => ({
+          ...item,
+          tasks: taskCounts[item.Status] || 0,
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching task count:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTaskCount();
+  }, []);
+
+  // Fetch active users
+  const fetchUserCount = async () => {
+    try {
+      const users = await api.getUsersbyTeam();
+      setActiveUsers(users.data.length);
+    } catch (error) {
+      console.error("Error fetching user count:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserCount();
+  }, []);
+
+  const statsData = {
+    totalProjects: totalProjects,
+    activeTasks: activeTasks,
+    activeUsers: activeUsers,
+  };
+
   return (
-    <div
-      style={{ padding: "32px", marginLeft: "256px", animation: "fadeIn 0.5s" }}
-    >
-      <h1
-        style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "32px" }}
-      >
+    <div className="p-8 animate-fadeIn">
+      <h1 className="text-2xl font-bold mb-8 dark:text-white">
         Dashboard Overview
       </h1>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: "24px",
-          marginBottom: "32px",
-        }}
-      >
-        <div
-          style={{
-            padding: "24px",
-            background: "#fff",
-            borderRadius: "8px",
-            boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-          }}
-        >
-          <h3
-            style={{
-              fontSize: "14px",
-              fontWeight: "500",
-              color: "#6b7280",
-              marginBottom: "8px",
-            }}
-          >
-            Total Projects
-          </h3>
-          <p style={{ fontSize: "24px", fontWeight: "bold" }}>
-            {statsData.totalProjects}
-          </p>
-        </div>
-
-        <div
-          style={{
-            padding: "24px",
-            background: "#fff",
-            borderRadius: "8px",
-            boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-          }}
-        >
-          <h3
-            style={{
-              fontSize: "14px",
-              fontWeight: "500",
-              color: "#6b7280",
-              marginBottom: "8px",
-            }}
-          >
-            Active Tasks
-          </h3>
-          <p style={{ fontSize: "24px", fontWeight: "bold" }}>
-            {statsData.activeTasks}
-          </p>
-        </div>
-
-        <div
-          style={{
-            padding: "24px",
-            background: "#fff",
-            borderRadius: "8px",
-            boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-          }}
-        >
-          <h3
-            style={{
-              fontSize: "14px",
-              fontWeight: "500",
-              color: "#6b7280",
-              marginBottom: "8px",
-            }}
-          >
-            Active Users
-          </h3>
-          <p style={{ fontSize: "24px", fontWeight: "bold" }}>
-            {statsData.activeUsers}
-          </p>
-        </div>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 dark:text-white">
+        <StatCard title="Total Projects" value={statsData.totalProjects} />
+        <StatCard title="Active Tasks" value={statsData.activeTasks} />
+        <StatCard title="Active Users" value={statsData.activeUsers} />
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
-          gap: "24px",
-        }}
-      >
-        <div
-          style={{
-            padding: "24px",
-            background: "#fff",
-            borderRadius: "8px",
-            boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-          }}
-        >
-          <h3
-            style={{
-              fontSize: "18px",
-              fontWeight: "600",
-              marginBottom: "16px",
-            }}
-          >
-            Project Distribution
-          </h3>
-          <BarChart
-            width={500}
-            height={300}
-            data={projectData}
-            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-          >
+      {/* Charts */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 dark:text-white">
+        <ChartCard title="Tasks Distribution">
+          <BarChart width={400} height={300} data={taskData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
+            <XAxis dataKey="Status" />
             <YAxis />
             <Tooltip />
-            <Bar dataKey="projects" fill="#6366F1" />
+            <Bar dataKey="tasks" fill="#6366F1" />
           </BarChart>
-        </div>
+        </ChartCard>
 
-        <div
-          style={{
-            padding: "24px",
-            background: "#fff",
-            borderRadius: "8px",
-            boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-          }}
-        >
-          <h3
-            style={{
-              fontSize: "18px",
-              fontWeight: "600",
-              marginBottom: "16px",
-            }}
-          >
-            Project Timeline
-          </h3>
-          <LineChart
-            width={500}
-            height={300}
-            data={projectData}
-            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-          >
+        <ChartCard title="Project Timeline">
+          <LineChart width={400} height={300} data={projectData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
             <YAxis />
@@ -185,10 +172,24 @@ const Dashboard = () => {
               strokeWidth={2}
             />
           </LineChart>
-        </div>
+        </ChartCard>
       </div>
     </div>
   );
 };
+
+const StatCard = ({ title, value }) => (
+  <div className="p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
+    <h3 className="text-sm font-medium text-gray-500 mb-2">{title}</h3>
+    <p className="text-2xl font-bold">{value}</p>
+  </div>
+);
+
+const ChartCard = ({ title, children }) => (
+  <div className="p-6 bg-white rounded-lg shadow-md dark:bg-gray-800 flex flex-col items-center">
+    <h3 className="text-lg font-semibold mb-4">{title}</h3>
+    <div className="w-full flex justify-center">{children}</div>
+  </div>
+);
 
 export default Dashboard;

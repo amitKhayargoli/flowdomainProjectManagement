@@ -95,12 +95,11 @@ const TableView = ({ id, setIsNewTaskOpen }) => {
   useEffect(() => {
     fetchTasks();
 
-    // Uncomment if you want to refresh the data periodically
-    // const fetchData = setInterval(() => {
-    //   fetchTasks();
-    // }, 2000);
+    const fetchData = setInterval(() => {
+      fetchTasks();
+    }, 2000);
 
-    // return () => clearInterval(fetchData);
+    return () => clearInterval(fetchData);
   }, [fetchTasks]);
 
   return (

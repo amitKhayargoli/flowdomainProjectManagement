@@ -1,76 +1,101 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
+import HomeNav from "../components/HomeNav";
+import { api } from "../api";
+import { useNavigate } from "react-router-dom";
+import { format, parseISO } from "date-fns";
 
 const Blog = () => {
-  const [content, setContent] = useState("");
-  const [category, setCategory] = useState(""); // Category state
+  const [blogs, setBlogs] = useState([]);
+  const [filteredBlogs, setFilteredBlogs] = useState([]);
+  const [category, setCategory] = useState(null);
+  const [active, setActive] = useState("");
 
-  const handleContentChange = (event) => {
-    setContent(event.target.value); // Update content
-  };
+  useEffect(() => {
+    const FetchBlogs = async () => {
+      const response = await api.getAllBlogs();
+      setBlogs(response);
+      setFilteredBlogs(response);
+    };
+    FetchBlogs();
+  }, []);
 
-  const handleCategoryChange = (event) => {
-    setCategory(event.target.value); // Update category
-  };
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (category) {
+      setFilteredBlogs(
+        blogs.filter(
+          (blog) => blog.category.toLowerCase() === category.toLowerCase()
+        )
+      );
+    } else {
+      setFilteredBlogs(blogs);
+    }
+  }, [category, blogs]);
 
   return (
-    <div className="p-3 flex flex-col items-center  w-full">
-      <h1 className="text-center text-3xl my-7 font-semibold dark:text-white">
-        Create a post
-      </h1>
-      <form className="flex flex-col gap-4 md:w-250">
-        <div className="flex flex-col gap-4 sm:flex-row justify-between">
-          <input
-            type="text"
-            placeholder="Title"
-            required
-            id="title"
-            className="text-xl flex-1 h-10 p-4 bg-white text-black dark:bg-gray-600 dark:text-black outline-none shadow-xl rounded-md"
-          />
-          <select
-            id="category"
-            value={category}
-            onChange={handleCategoryChange}
-            className="text-md flex-1 py-2 md:py-0  md:h-10 px-4 bg-white text-black dark:bg-gray-600 dark:text-black outline-none shadow-xl rounded-md md:ml-4"
-          >
-            <option value="">Select Category</option>
-            <option value="coding">Coding</option>
-            <option value="movies">Movies</option>
-            <option value="tv">TV</option>
-            <option value="music">Music</option>
-            <option value="sports">Sports</option>
-          </select>
+    <>
+      <HomeNav />
+
+      <div className="bg-black text-white px-10 md:px-40 flex-col md:flex md:flex-row gap-50 py-20">
+        <div className="md:flex-col w-30">
+          <h1 className="text-5xl font-bold">Blog</h1>
+          <h2 className="text-xl text-gray-400 mt-5">My compiled blog posts</h2>
+
+          <ul className="flex flex-col gap-3 text-lg text-gray-400 mt-10">
+            {["Sports", "Coding", "Productivity", "Music", "Movies", "TV"].map(
+              (key) => (
+                <li
+                  key={key}
+                  onClick={() => {
+                    setCategory(key);
+                    setActive(key);
+                  }}
+                  className={`hover:text-blue-500 w-20 cursor-pointer ${
+                    active === key ? "text-[#06afff]" : ""
+                  }`}
+                >
+                  {key}
+                </li>
+              )
+            )}
+          </ul>
         </div>
 
-        <div className="flex justify-between items-center mt-4 gap-5">
-          <input
-            accept="image/*"
-            id="file"
-            name="file"
-            type="file"
-            className="flex flex-1 file:bg-[#1f2936] file:p-3 file:text-md file:text-white file:mr-4 font-bold rounded-md bg-white shadow-xl"
-          />
-          <label htmlFor="file" className="flex max-sm:flex-1 ">
-            <span className="w-full ml-2 text-sm font-semibold dark:text-gray-200 rounded-lg cursor-pointer text-white bg-[#1f2936] p-2 md:p-4 px-4">
-              Upload image
-            </span>
-          </label>
-        </div>
+        <div className="grid-cols-1 md:grid md:grid-cols-2 gap-15">
+          {filteredBlogs.map((blog) => (
+            <div
+              onClick={() => {
+                navigate(`/blog/${blog.id}`);
+              }}
+              key={blog.id}
+              className="cursor-pointer hover:scale-105 transition duration-600"
+            >
+              <div className="h-[250px] overflow-hidden rounded-t-xl">
+                <img
+                  src={blog.imageUrl}
+                  className="object-cover w-full"
+                  alt={blog.title}
+                />
+              </div>
 
-        <div className="mt-4 w-full">
-          <textarea
-            value={content}
-            onChange={handleContentChange}
-            placeholder="Write your post content here..."
-            rows="12"
-            className="text-lg p-4 w-full bg-white text-black dark:bg-gray-600 dark:text-black outline-none shadow-xl rounded-md"
-          />
+              <div className="py-2">
+                <h1 className="text-lg">{blog.category}</h1>
+                <p className="text-2xl font-bold mt-2">{blog.title}</p>
+                <p
+                  className="text-xl mt-2 text-gray-500 line-clamp-2 overflow-hidden text-ellipsis"
+                  dangerouslySetInnerHTML={{ __html: blog.content }}
+                ></p>
+                <h4 className="text-lg mt-2">
+                  {format(parseISO(blog.createdAt), "MMMM dd, yyyy")}
+                </h4>
+              </div>
+            </div>
+          ))}
         </div>
-
-        <button className="ml-2 text-lg font-semibold dark:text-gray-200 rounded-lg cursor-pointer text-white bg-[#1f2936] p-3 px-4">
-          Post Blog
-        </button>
-      </form>
-    </div>
+      </div>
+    </>
   );
 };
 

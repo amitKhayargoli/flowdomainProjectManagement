@@ -89,13 +89,11 @@ const PriorityPage = ({ priority }) => {
     }
 
     try {
-      console.log("Making API call to fetch tasks...");
       const response = await axios.get(`${API_BASE_URL}/tasks/getUserTasks/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Response data:", response.data);
 
       setTasks(response.data);
     } catch (error) {
@@ -110,10 +108,8 @@ const PriorityPage = ({ priority }) => {
 
   useEffect(() => {}, [tasks]);
 
-  console.log(tasks);
   const filteredTasks = tasks.filter((task) => task.priority === priority);
 
-  console.log("Filtered tasks:", filteredTasks);
   if (!filteredTasks)
     return <div className="text-black">Loading or no tasks found...</div>;
 

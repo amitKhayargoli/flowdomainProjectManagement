@@ -56,7 +56,6 @@ const ProjectHeader = ({ id, activeTab, setActiveTab, project }) => {
   const fetchTasks = useCallback(async () => {
     try {
       const data = await api.getTasks(id);
-      console.log(data);
       setTasks(data);
       setFilteredTasks(data);
     } catch (error) {
@@ -66,7 +65,6 @@ const ProjectHeader = ({ id, activeTab, setActiveTab, project }) => {
 
   useEffect(() => {
     fetchTasks();
-    console.log("Fetched ", tasks);
   }, [fetchTasks]);
 
   const handleCopy = () => {

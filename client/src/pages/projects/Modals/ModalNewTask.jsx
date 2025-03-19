@@ -71,7 +71,6 @@ const ModalNewTask = ({ isOpen, onClose, id }) => {
           }
         );
 
-        console.log("Upload Response:", uploadResponse.data);
         imageUrl = "http://localhost:5000/" + uploadResponse.data.file.path;
 
         if (!imageUrl) {
@@ -90,7 +89,6 @@ const ModalNewTask = ({ isOpen, onClose, id }) => {
         projectId: Number(id),
       });
 
-      console.log(status);
       setTitle("");
       setDescription("");
       setStatus(Status.ToDo);
@@ -111,7 +109,13 @@ const ModalNewTask = ({ isOpen, onClose, id }) => {
   };
 
   const isFormValid = () => {
-    return title && startDate && dueDate && status;
+    return (
+      title &&
+      startDate &&
+      dueDate &&
+      status &&
+      fileLabel == "Image Uploaded..."
+    );
   };
 
   const selectStyles =

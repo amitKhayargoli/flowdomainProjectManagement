@@ -14,7 +14,7 @@ const router = express.Router();
 // Define routes
 router.post("/", create);
 
-router.put("/", update);
+router.put("/", authenticateToken, update);
 router.put("/deleteAccount", authenticateToken, deleteAccount);
 router.put("/delete/:id", deleteUserbyId);
 router.get("/", authenticateToken, getAllUsers);

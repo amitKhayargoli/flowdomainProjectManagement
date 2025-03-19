@@ -70,7 +70,7 @@ const Signup = () => {
     " h-12  w-full xl:text-xl focus:outline-none md:text-[14px] md:w-[55%] xl:w-[55%] bg-black border-1  border-[#454549] !pl-6 text-xl !my-2 rounded-md ";
 
   return (
-    <div className="bg-black h-screen xl:h-screen !p-10 flex flex-col">
+    <div className="bg-black h-screen xl:h-screen !p-10 flex flex-col custom-gradient">
       <div className="flex justify-between !px-12 text-white">
         <h1
           onClick={() => {
@@ -92,7 +92,11 @@ const Signup = () => {
 
       <div className="h-full flex md:flex-row flex-col">
         <div className="xl:flex flex-col xl:p-20 items-center justify-center xl:h-full md:h-[80%] md:w-[40%]">
-          <img className="w-full h-full" src={LoginLogo} alt="" />
+          <img
+            className="w-full h-full object-contain"
+            src={LoginLogo}
+            alt=""
+          />
         </div>
 
         <form

@@ -19,7 +19,7 @@ import axios from "axios";
 import { api } from "../api";
 import ModalEditTask from "./projects/Modals/ModalEditTask";
 
-const taskStatus = ["To do", "Work In Progress", "Review", "Completed"];
+const taskStatus = ["To do", "Work In Progress", "Under Review", "Completed"];
 
 const BoardView = ({ id, setIsNewTaskOpen }) => {
   const [tasks, setTasks] = useState([]);
@@ -40,11 +40,11 @@ const BoardView = ({ id, setIsNewTaskOpen }) => {
   useEffect(() => {
     fetchTasks();
 
-    // const fetchData = setInterval(() => {
-    //   fetchTasks();
-    // }, 500);
+    const fetchData = setInterval(() => {
+      fetchTasks();
+    }, 500);
 
-    // return () => clearInterval(fetchData);
+    return () => clearInterval(fetchData);
   }, [fetchTasks]);
 
   useEffect(() => {
@@ -102,7 +102,10 @@ const BoardView = ({ id, setIsNewTaskOpen }) => {
                 ))}
                 <li
                   className="cursor-pointer p-1 hover:bg-gray-200 dark:hover:bg-[#2d2d2d] rounded"
-                  onClick={() => setPriorityFilter(null)}
+                  onClick={() => {
+                    setPriorityFilter(null);
+                    setIsFilterOpen(false);
+                  }}
                 >
                   Reset Filter
                 </li>
@@ -237,13 +240,11 @@ const Task = ({ task, fetchTasks }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskById, setTaskById] = useState(null);
   const openModal = () => {
-    console.log(task.id);
     setIsModalOpen(true);
     const getTaskById = async () => {
       try {
         const response = await api.getTaskbyId(task.id);
 
-        console.log(response);
         setTaskById(response);
       } catch (err) {
         console.error("Error fetching task by ID:", err);
@@ -252,7 +253,6 @@ const Task = ({ task, fetchTasks }) => {
 
     getTaskById();
   };
-  // console.log(taskById);
   const closeModal = () => {
     setIsModalOpen(false);
   };
