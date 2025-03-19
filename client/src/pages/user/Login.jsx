@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import LoginLogo from "../../images/LoginLogo.png";
 import github from "../../images/github.png";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { ArrowLeft, User } from "lucide-react";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import axios from "axios"; // Add this import
+import axios from "axios";
 import { toast } from "react-toastify";
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -30,44 +30,46 @@ const Login = () => {
   });
 
   const onSubmit = async (data) => {
-    console.log("Login btn clicked");
-
-    console.log("Logging in with:", data);
-
-    axios
-      .post("http://localhost:5000/api/auth/login", data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        console.log("Login Response:", response.data.data.access_token);
-
-        if (response.data && response.data.data.access_token) {
-          console.log("Access Token:", response.data.data.access_token);
-          localStorage.setItem("token", response.data.data.access_token);
-
-          localStorage.setItem("role", response.data.data.role);
-          localStorage.setItem("userId", response.data.data.userId);
-
-          console.log(response.data.data.role);
-          if (response.data.data.role === "user") {
-            navigate("/workspace");
-            toast.success("Logged into Workspace");
-          } else if (response.data.data.role === "admin") {
-            navigate("/Admin/");
-            toast.success("Logged as Admin");
-          }
-        } else {
-          alert("Login failed! Check credentials.");
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        data,
+        {
+          headers: { "Content-Type": "application/json" },
         }
-      })
-      .catch((error) => {
-        console.error("Error logging in:", error);
-        alert("Error logging in. Please try again.");
-      });
+      );
 
-    reset();
+      if (response.data?.data?.access_token) {
+        localStorage.setItem("token", response.data.data.access_token);
+        localStorage.setItem("role", response.data.data.role);
+        localStorage.setItem("userId", response.data.data.userId);
+
+        reset();
+
+        const inviteToken = localStorage.getItem("InviteToken");
+        if (inviteToken) {
+          navigate(`/invite?token=${inviteToken}`);
+          localStorage.removeItem("InviteToken");
+          window.location.reload();
+        } else {
+          if (localStorage.getItem("joinedProject")) {
+            navigate("/workspace/projects");
+            window.location.reload();
+          } else {
+            navigate(
+              response.data.data.role === "user"
+                ? "/workspace/dashboard"
+                : "/Admin/projects"
+            );
+
+            window.location.reload();
+          }
+        }
+      }
+    } catch (error) {
+      toast.error("Login failed! Check credentials");
+      reset();
+    }
   };
 
   const hoverClassnames =
@@ -77,7 +79,7 @@ const Login = () => {
     "h-12 w-full xl:text-xl md:text-[14px] md:w-[55%] xl:w-[55%] bg-black border-1 border-[#454549] !pl-6 text-xl !my-2 rounded-md focus:outline-none";
 
   return (
-    <div className="bg-black h-screen xl:h-screen !p-10 flex flex-col">
+    <div className="bg-black h-screen xl:h-screen !p-10 flex flex-col custom-gradient">
       <div className="flex justify-between !px-12 text-white">
         <h1
           onClick={() => {
@@ -99,7 +101,11 @@ const Login = () => {
 
       <div className="h-full flex md:flex-row flex-col">
         <div className="xl:flex flex-col xl:p-20 items-center justify-center xl:h-full md:h-[80%] md:w-[40%]">
-          <img className="w-full h-full" src={LoginLogo} alt="" />
+          <img
+            className="w-full h-full object-contain"
+            src={LoginLogo}
+            alt=""
+          />
         </div>
 
         <form
@@ -144,10 +150,13 @@ const Login = () => {
               OR CONTINUE WITH
             </h1>
 
-            {/* <button className="flex gap-1 items-center justify-center h-12 font-normal text-white w-full md:w-[55%] border-1 border-[#454549] xl:w-[55%] transition-all ease-in-out duration-400 bg-black hover:bg-white hover:text-black !pl-6 text-xl !my-2 rounded-md cursor-pointer">
-              <img src={github} className="w-8 h-8" alt="Github" />
+            <button
+              disabled
+              className="flex gap-1 items-center justify-center h-12 font-normal text-white w-full md:w-[55%] border-1 border-[#454549] xl:w-[55%] transition-all ease-in-out duration-400 bg-black hover:bg-white hover:text-black !pl-6 text-xl !my-2 rounded-md cursor-pointer"
+            >
+              <img src={github} className="w-8 h-8 " alt="Github" />
               Github
-            </button> */}
+            </button>
 
             <p className="font-normal text-[16px] text-center xl:w-[40%] mt-4">
               By clicking continue, you agree to our Terms of Service and

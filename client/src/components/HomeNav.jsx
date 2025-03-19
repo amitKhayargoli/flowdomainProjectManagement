@@ -1,27 +1,55 @@
 import React from "react";
-
+import { useNavigate, useLocation } from "react-router-dom";
 import Logo from "../../src/images/logo.png";
-import { useNavigate } from "react-router-dom";
 
 const HomeNav = () => {
   const navigate = useNavigate();
-  const liClassNames = `cursor-pointer hover:text-blue-400  transition duration-300 ease-in`;
+  const location = useLocation();
+
+  const isActive = (path) => location.pathname === path;
+
+  const liClassNames = (path) =>
+    `cursor-pointer transition duration-300 ease-in ${
+      isActive(path) ? "text-blue-400 font-bold" : "hover:text-blue-400"
+    }`;
+
   return (
     <div className="px-5 h-25 flex justify-between items-center bg-black">
-      <img src={Logo} alt="" className="h-full" />
+      <img
+        src={Logo}
+        onClick={() => navigate("/")}
+        alt="Logo"
+        className="h-full"
+      />
 
-      <ul className="md:flex text-2xl font-semibold text-[#5F5F69]  gap-10 hidden">
-        <li className={liClassNames}>Product</li>
-        <li className={liClassNames}>Pricing</li>
-        <li className={liClassNames}>Blog</li>
-        <li className={liClassNames}>Docs</li>
-        <li className={liClassNames} onClick={() => navigate("/changelog")}>
+      <ul className="md:flex text-2xl font-semibold text-[#5F5F69] gap-10 hidden">
+        <li
+          className={liClassNames("/product")}
+          onClick={() => {
+            window.scrollTo({ top: 1000, behavior: "smooth" });
+          }}
+        >
+          Product
+        </li>
+        <li
+          className={liClassNames("/pricing")}
+          onClick={() => navigate("/pricing")}
+        >
+          Pricing
+        </li>
+        <li className={liClassNames("/blog")} onClick={() => navigate("/blog")}>
+          Blog
+        </li>
+        <li
+          className={liClassNames("/changelog")}
+          onClick={() => navigate("/changelog")}
+        >
           Changelog
         </li>
       </ul>
 
       <button
-        onClick={() => navigate("/Login")}
+        onClick={() => navigate("/login")}
         className="py-2 px-8 bg-[#0C8CE9] rounded-xl text-2xl cursor-pointer hover:text-white hover:bg-blue-600 transition duration-300 ease-in-out"
       >
         Login

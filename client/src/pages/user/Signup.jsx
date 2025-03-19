@@ -15,7 +15,7 @@ const validationSchema = Yup.object().shape({
     .required("Email is required"),
   username: Yup.string()
     .required("Username is required")
-    .matches(/^[a-zA-Z0-9_ ]{4,15}$/, "Username must be 4-15 characters long"),
+    .matches(/^[a-zA-Z0-9_]{4,15}$/, "Username must be 4-15 characters long"),
   password: Yup.string()
     .required("Password is required")
     .min(6, "Password must be at least 6 characters long"),
@@ -70,7 +70,7 @@ const Signup = () => {
     " h-12  w-full xl:text-xl focus:outline-none md:text-[14px] md:w-[55%] xl:w-[55%] bg-black border-1  border-[#454549] !pl-6 text-xl !my-2 rounded-md ";
 
   return (
-    <div className="bg-black h-screen xl:h-screen !p-10 flex flex-col">
+    <div className="bg-black h-screen xl:h-screen !p-10 flex flex-col custom-gradient">
       <div className="flex justify-between !px-12 text-white">
         <h1
           onClick={() => {
@@ -92,7 +92,11 @@ const Signup = () => {
 
       <div className="h-full flex md:flex-row flex-col">
         <div className="xl:flex flex-col xl:p-20 items-center justify-center xl:h-full md:h-[80%] md:w-[40%]">
-          <img className="w-full h-full" src={LoginLogo} alt="" />
+          <img
+            className="w-full h-full object-contain"
+            src={LoginLogo}
+            alt=""
+          />
         </div>
 
         <form
@@ -150,10 +154,10 @@ const Signup = () => {
               OR CONTINUE WITH
             </h1>
 
-            {/* <button className="flex gap-1 items-center justify-center h-12 font-normal text-white w-full md:w-[55%] border-1 border-[#454549]  xl:w-[55%] transition-all ease-in-out duration-400 bg-black hover:bg-white hover:text-black !pl-6 text-xl !my-2 rounded-md cursor-pointer">
-              <img src={github} className="w-8 h-8" alt="" />
+            <button className="flex gap-1 items-center justify-center h-12 font-normal text-white w-full md:w-[55%] border-1 border-[#454549]  xl:w-[55%] transition-all ease-in-out duration-400 bg-black hover:bg-white hover:text-black !pl-6 text-xl !my-2 rounded-md cursor-pointer">
+              <img src={github} className="w-8 h-8 " alt="" />
               Github
-            </button> */}
+            </button>
 
             <p className="font-normal text-[16px] text-center  xl:w-[40%] mt-4">
               By clicking continue, you agree to our Terms of Service and

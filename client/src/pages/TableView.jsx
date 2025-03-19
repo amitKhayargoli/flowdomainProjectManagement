@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -11,42 +11,43 @@ import { useDispatch, useSelector } from "react-redux";
 import { dataGridSxStyles } from "../../lib/utils/utils";
 
 import { isDarkMode } from "../redux/globalSlice";
+import { format } from "date-fns"; // Import date-fns for date formatting
+import { Box } from "@mui/material";
 
 const columns = [
   {
     field: "title",
     headerName: "Title",
-    width: 100,
+    width: 180,
   },
   {
     field: "description",
     headerName: "Description",
-    width: 250,
+    width: 300,
   },
   {
     field: "status",
     headerName: "Status",
     width: 200,
-
     renderCell: (params) => (
-      <span className="rounded-2xl bg-green-300 p-3 text-gray-800 xl:p-2">
+      <span className="rounded-2xl bg-blue-400 p-3 text-gray-800 xl:p-2">
         {params.value}
       </span>
     ),
   },
-
   {
     field: "priority",
     headerName: "Priority",
     width: 120,
-
     renderCell: (params) =>
-      params.value == "High" ? (
+      params.value === "High" ? (
         <span className="p-3 text-red-400 xl:p-2">{params.value}</span>
-      ) : params.value == "Medium" ? (
+      ) : params.value === "Medium" ? (
         <span className="p-3 text-yellow-500 xl:p-2">{params.value}</span>
-      ) : params.value == "Low" ? (
+      ) : params.value === "Low" ? (
         <span className="p-3 text-green-400 xl:p-2">{params.value}</span>
+      ) : params.value === "Backlog" ? (
+        <span className="p-3 text-blue-400 xl:p-2">{params.value}</span>
       ) : (
         ""
       ),
@@ -60,25 +61,21 @@ const columns = [
     field: "startDate",
     headerName: "Start Date",
     width: 130,
+    renderCell: (params) => {
+      return params.value
+        ? format(new Date(params.value), "MMM dd, yyyy")
+        : "Not set";
+    },
   },
   {
     field: "dueDate",
     headerName: "Due Date",
     width: 130,
-  },
-  {
-    field: "author",
-    headerName: "Author",
-    width: 100,
-    renderCell: (params) =>
-      (params.value && params.value.username) || "Username",
-  },
-  {
-    field: "assignee",
-    headerName: "Assignee",
-    width: 100,
-    renderCell: (params) =>
-      (params.value && params.value.username) || "Unassigned",
+    renderCell: (params) => {
+      return params.value
+        ? format(new Date(params.value), "MMM dd, yyyy")
+        : "Not set";
+    },
   },
 ];
 
@@ -86,18 +83,24 @@ const TableView = ({ id, setIsNewTaskOpen }) => {
   const darkMode = useSelector(isDarkMode);
   const [tasks, setTasks] = useState([]);
 
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
       const data = await api.getTasks(id);
       setTasks(data);
     } catch (error) {
       console.error("Error fetching tasks:", error);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchTasks();
-  }, [id]);
+
+    const fetchData = setInterval(() => {
+      fetchTasks();
+    }, 2000);
+
+    return () => clearInterval(fetchData);
+  }, [fetchTasks]);
 
   return (
     <div className="w-full px-4 py-5 xl:px-6">
@@ -116,13 +119,19 @@ const TableView = ({ id, setIsNewTaskOpen }) => {
         />
       </div>
 
-      <DataGrid
-        // className="border-3 border-gray-200 bg-white shadow-xl dark:!border-gray-800 dark:text-gray-200"
-        className="border border-gray-200  dark:!border-black dark:!bg-[#1d1f21] dark:!text-white shadow"
-        columns={columns}
-        rows={tasks || []}
-        sx={dataGridSxStyles(darkMode)}
-      />
+      <Box
+        sx={{
+          width: "100%",
+          bgcolor: darkMode ? "black" : "white",
+        }}
+      >
+        <DataGrid
+          className="border border-gray-200 dark:!border-black dark:!bg-[#1d1f21] dark:!text-white shadow"
+          columns={columns}
+          rows={tasks || []}
+          sx={dataGridSxStyles(darkMode)}
+        />
+      </Box>
     </div>
   );
 };

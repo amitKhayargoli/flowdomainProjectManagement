@@ -5,16 +5,10 @@ import { motion } from "framer-motion";
 
 import {
   EllipsisVertical,
-  MessageCircle,
-  MessageCircleHeart,
-  MessageSquare,
-  MessageSquareCode,
-  MessageSquareDashedIcon,
-  MessageSquareDiff,
-  MessageSquareDot,
-  MessageSquareHeartIcon,
+  Filter,
   MessageSquareQuoteIcon,
   Plus,
+  Search,
 } from "lucide-react";
 import { format } from "date-fns";
 import {
@@ -25,10 +19,14 @@ import axios from "axios";
 import { api } from "../api";
 import ModalEditTask from "./projects/Modals/ModalEditTask";
 
-const taskStatus = ["To do", "Work In Progress", "Review", "Completed"];
+const taskStatus = ["To do", "Work In Progress", "Under Review", "Completed"];
 
 const BoardView = ({ id, setIsNewTaskOpen }) => {
-  const [tasks, setTasks] = useState(null);
+  const [tasks, setTasks] = useState([]);
+  const [filteredTasks, setFilteredTasks] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState(null);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const fetchTasks = useCallback(async () => {
     try {
@@ -37,11 +35,36 @@ const BoardView = ({ id, setIsNewTaskOpen }) => {
     } catch (error) {
       console.error("Error fetching tasks:", error);
     }
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     fetchTasks();
+
+    const fetchData = setInterval(() => {
+      fetchTasks();
+    }, 500);
+
+    return () => clearInterval(fetchData);
   }, [fetchTasks]);
+
+  useEffect(() => {
+    const filtered =
+      priorityFilter === null
+        ? tasks
+        : tasks.filter((task) => task.priority === priorityFilter);
+
+    setFilteredTasks(filtered);
+  }, [tasks, priorityFilter]);
+
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+
+    const filtered = tasks.filter((task) =>
+      task.title.toLowerCase().includes(query)
+    );
+    setFilteredTasks(filtered);
+  };
 
   const moveTask = async (taskId, status) => {
     try {
@@ -51,28 +74,84 @@ const BoardView = ({ id, setIsNewTaskOpen }) => {
       console.error("Error updating task status:", error);
     }
   };
+
   return (
-    <motion.div
-      className=""
-      initial={{ opacity: 1, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 2 }}
-    >
-      <DndProvider backend={HTML5Backend}>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 p-5">
-          {taskStatus.map((status) => (
-            <TaskColumn
-              fetchTasks={fetchTasks}
-              key={status}
-              status={status}
-              tasks={tasks || []}
-              moveTask={moveTask}
-              setIsNewTaskOpen={setIsNewTaskOpen}
-            />
-          ))}
+    <>
+      <div className="px-4 xl:px-8 mb-6 flex w-full h-6 items-center justify-between">
+        <div>
+          <h1 className="mt-15 text-2xl dark:text-white font-bold">
+            BoardView
+          </h1>
         </div>
-      </DndProvider>
-    </motion.div>
+
+        <div className="flex items-center gap-2 mt-15">
+          {isFilterOpen && (
+            <div className="relative top-25 left-20 z-100 bg-white dark:text-white dark:bg-[#1d1f21] p-2 rounded-lg shadow-md mt-2">
+              <ul>
+                {["High", "Medium", "Low", "Backlog"].map((priority) => (
+                  <li
+                    key={priority}
+                    className="cursor-pointer p-1 hover:bg-gray-200 dark:hover:bg-[#2d2d2d] rounded"
+                    onClick={() => {
+                      setPriorityFilter(priority);
+                      setIsFilterOpen(false);
+                    }}
+                  >
+                    {priority}
+                  </li>
+                ))}
+                <li
+                  className="cursor-pointer p-1 hover:bg-gray-200 dark:hover:bg-[#2d2d2d] rounded"
+                  onClick={() => {
+                    setPriorityFilter(null);
+                    setIsFilterOpen(false);
+                  }}
+                >
+                  Reset Filter
+                </li>
+              </ul>
+            </div>
+          )}
+          <button
+            className="text-gray-500 hover:text-gray-600 dark:text-white dark:hover:text-gray-400"
+            onClick={() => setIsFilterOpen(!isFilterOpen)} // Toggle filter menu
+          >
+            <Filter className="h-5 w-5" />
+          </button>
+
+          <div className="relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={handleSearch}
+              placeholder="Search Tasks"
+              className="rounded-md border py-1 pl-10 pr-4 focus:outline-none dark:border-white dark:text-white"
+            />
+            <Search className="absolute left-3 top-2 h-4 w-4 text-gray-400 dark:text-white" />
+          </div>
+        </div>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 1, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 2 }}
+      >
+        <DndProvider backend={HTML5Backend}>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 p-5 ">
+            {taskStatus.map((status) => (
+              <TaskColumn
+                key={status}
+                status={status}
+                tasks={filteredTasks}
+                moveTask={moveTask}
+                setIsNewTaskOpen={setIsNewTaskOpen}
+              />
+            ))}
+          </div>
+        </DndProvider>
+      </motion.div>
+    </>
   );
 };
 
@@ -105,7 +184,7 @@ const TaskColumn = ({
       ref={(instance) => {
         drop(instance);
       }}
-      className={`sl:py-4 rounded-lg py-2 xl:px-2 hover:cursor-pointer transition-transform duration-500 transform hover:scale-105${
+      className={`sl:py-4 rounded-lg py-2 xl:px-2 hover:cursor-pointer transition-transform duration-500 transform ${
         isOver ? "bg-blue-100 dark:bg-neutral-950" : ""
       }`}
     >
@@ -161,13 +240,11 @@ const Task = ({ task, fetchTasks }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskById, setTaskById] = useState(null);
   const openModal = () => {
-    console.log(task.id);
     setIsModalOpen(true);
     const getTaskById = async () => {
       try {
         const response = await api.getTaskbyId(task.id);
 
-        console.log(response);
         setTaskById(response);
       } catch (err) {
         console.error("Error fetching task by ID:", err);
@@ -176,7 +253,6 @@ const Task = ({ task, fetchTasks }) => {
 
     getTaskById();
   };
-  console.log(taskById);
   const closeModal = () => {
     setIsModalOpen(false);
   };
@@ -227,17 +303,19 @@ const Task = ({ task, fetchTasks }) => {
           drag(instance);
         }}
         className={`mb-4 rounded-md bg-white shadow dark:bg-[#1d1f21] ${
-          isDragging ? "opacity-50" : "opacity-100"
+          isDragging ? "opacity-50" : "opacity-100  "
         }`}
       >
-        {task.attachments && task.attachments.length > 0 && (
-          <img
-            src={`/${task.attachments[0].fileURL}`}
-            alt={task.attachments[0].fileName}
-            width={400}
-            height={200}
-            className="h-auto w-full rounded-t-md"
-          />
+        {task.fileURL ? (
+          <div className="aspect-[16/9] overflow-hidden mb-4 rounded-t-lg">
+            <img
+              src={task.fileURL}
+              alt={task.fileURL}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ) : (
+          ""
         )}
 
         <div className="p-4 md:p-6">
@@ -249,7 +327,7 @@ const Task = ({ task, fetchTasks }) => {
                 {taskTagsSplit.map((tag) => (
                   <div
                     key={tag}
-                    className="rounded-full bg-blue-400 px-2 py-1 text-xs"
+                    className="rounded-full bg-blue-400 px-2 py-1 text-xs text-black"
                   >
                     {tag}
                   </div>
@@ -264,11 +342,6 @@ const Task = ({ task, fetchTasks }) => {
 
           <div className="my-5 flex justify-between px-1">
             <h4 className="text-md font-bold dark:text-white">{task.title}</h4>
-            {typeof task.points === "number" && (
-              <div className="text-xs font-semibold dark:text-white">
-                {task.points} pts
-              </div>
-            )}
           </div>
 
           <div className="text-xs text-gray-500 dark:text-neutral-500">

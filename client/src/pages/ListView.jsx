@@ -1,26 +1,30 @@
 import { getTasks } from "../../../server/controllers/taskController";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Header from "../components/Header";
 import ListViewCard from "../components/ListViewCard";
 import { api } from "../api";
 
 const ListView = ({ id, setIsNewTaskOpen }) => {
   const [tasks, setTasks] = useState([]);
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
       const data = await api.getTasks(id);
       setTasks(data);
     } catch (error) {
       console.error("Error fetching tasks:", error);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchTasks();
-  }, [id]);
 
-  // console.log(tasks);
+    const fetchData = setInterval(() => {
+      fetchTasks();
+    }, 2000);
+
+    return () => clearInterval(fetchData);
+  }, [fetchTasks]);
 
   return (
     <div className="w-full px-4 pb-8 py-5 xl:px-6">

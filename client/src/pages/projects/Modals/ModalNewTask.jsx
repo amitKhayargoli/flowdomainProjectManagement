@@ -3,6 +3,7 @@ import { formatISO } from "date-fns";
 import Modal from "../../../components/Modal";
 import { createTask } from "../../../../../server/controllers/taskController";
 import { api } from "../../../api";
+import axios from "axios";
 
 export const Status = {
   ToDo: "To do",
@@ -19,6 +20,9 @@ export const Priority = {
 };
 
 const ModalNewTask = ({ isOpen, onClose, id }) => {
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [fileName, setFileName] = useState("");
+  const [fileLabel, setFileLabel] = useState("Upload an attachment");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState(Status.ToDo);
@@ -26,14 +30,20 @@ const ModalNewTask = ({ isOpen, onClose, id }) => {
   const [tags, setTags] = useState("");
   const [startDate, setStartDate] = useState("");
   const [dueDate, setDueDate] = useState("");
-  const [authorUserId, setAuthorUserId] = useState("");
-  const [assignedUserId, setAssignedUserId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async () => {
-    if (!title || !authorUserId) return;
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setFileName(file.name);
+      setFileLabel("Image Uploaded...");
+    }
+  };
 
-    setIsLoading(true);
+  const handleSubmit = async () => {
+    const token = localStorage.getItem("token");
+    if (!title) return;
 
     const formattedStartDate = formatISO(new Date(startDate), {
       representation: "complete",
@@ -44,6 +54,29 @@ const ModalNewTask = ({ isOpen, onClose, id }) => {
     });
 
     try {
+      let imageUrl = "";
+
+      if (selectedFile) {
+        const data = new FormData();
+        data.append("file", selectedFile);
+
+        const uploadResponse = await axios.post(
+          "http://localhost:5000/api/file/upload",
+          data,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        imageUrl = "http://localhost:5000/" + uploadResponse.data.file.path;
+
+        if (!imageUrl) {
+          throw new Error("File URL is missing from response");
+        }
+      }
       await api.createTask({
         title,
         description,
@@ -52,12 +85,21 @@ const ModalNewTask = ({ isOpen, onClose, id }) => {
         tags,
         startDate: formattedStartDate,
         dueDate: formattedEndDate,
-        authorUserId: parseInt(authorUserId),
-        assignedUserId: parseInt(assignedUserId),
+        fileURL: imageUrl,
         projectId: Number(id),
       });
 
-      console.log(status);
+      setTitle("");
+      setDescription("");
+      setStatus(Status.ToDo);
+      setPriority(Priority.Medium);
+      setTags("");
+      setStartDate("");
+      setDueDate("");
+      setSelectedFile(null);
+      setFileName("");
+      setFileLabel("Upload an attachment");
+
       setIsLoading(false); // Set loading state to false
       onClose(); // Close the modal after creating the task
     } catch (error) {
@@ -67,7 +109,13 @@ const ModalNewTask = ({ isOpen, onClose, id }) => {
   };
 
   const isFormValid = () => {
-    return title && authorUserId && startDate && dueDate && status;
+    return (
+      title &&
+      startDate &&
+      dueDate &&
+      status &&
+      fileLabel == "Image Uploaded..."
+    );
   };
 
   const selectStyles =
@@ -151,28 +199,28 @@ const ModalNewTask = ({ isOpen, onClose, id }) => {
           />
         </div>
 
-        <input
-          type="text"
-          className={inputStyles}
-          placeholder="Author User Id"
-          value={authorUserId}
-          onChange={(e) => setAuthorUserId(e.target.value)}
-        />
-
-        <input
-          type="text"
-          className={inputStyles}
-          placeholder="Assigned User Id"
-          value={assignedUserId}
-          onChange={(e) => setAssignedUserId(e.target.value)}
-        />
+        <div className="w-full">
+          <label
+            htmlFor="file-upload"
+            className="w-full flex items-center justify-center dark:bg-[#364153] bg-gray-100 text-dark dark:text-white font-medium text-base py-2.5 px-4 rounded cursor-pointer file:hidden"
+          >
+            {fileLabel}
+          </label>
+          <input
+            id="file-upload"
+            className="hidden"
+            type="file"
+            name="file-upload"
+            onChange={handleImageUpload}
+          />
+        </div>
 
         <button
           type="submit"
           className={`focus-offset-2 mt-4 flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-600  focus:outline-none focus:ring-2 focus:ring-blue-600 ${
             !isFormValid() || isLoading ? "cursor-not-allowed opacity-50" : ""
           }`}
-          disabled={!isFormValid() || isLoading}
+          disabled={!isFormValid()}
         >
           {isLoading ? "Creating" : "Create Task"}
         </button>

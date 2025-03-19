@@ -41,11 +41,11 @@ export const create = async (req, res) => {
 
 export const update = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.userId;
     const body = req.body;
 
     const user = await prisma.user.update({
-      where: { id: Number(userId) },
+      where: { userId: Number(userId) },
       data: body,
     });
 
@@ -59,12 +59,33 @@ export const update = async (req, res) => {
   }
 };
 
-export const deleteUser = async (req, res) => {
+export const deleteAccount = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
 
     const user = await prisma.user.delete({
-      where: { id: Number(userId) },
+      where: { userId: Number(userId) },
+    });
+
+    res.status(200).send({ message: "User deleted successfully" });
+  } catch (error) {
+    if (error.code === "P2025") {
+      return res.status(404).send({ message: "User not found" });
+    }
+    console.log(error);
+    res.status(500).json({ error: "failed to delete user" });
+  }
+};
+
+export const deleteUserbyId = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await prisma.user.delete({
+      where: { userId: Number(userId) },
     });
 
     res.status(200).send({ message: "User deleted successfully" });
@@ -87,11 +108,43 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
+export const getUsersbyTeam = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    const userProjects = await prisma.projectTeam.findMany({
+      where: { userId },
+      select: { projectId: true },
+    });
+
+    const projectIds = userProjects.map((p) => p.projectId);
+
+    if (projectIds.length === 0) {
+      return res.status(200).send({ data: [] });
+    }
+
+    const users = await prisma.user.findMany({
+      where: {
+        projectTeams: {
+          some: {
+            projectId: { in: projectIds },
+          },
+        },
+      },
+    });
+
+    res.status(200).send({ data: users });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+};
+
 export const getUserById = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.userId;
     const user = await prisma.user.findUnique({
-      where: { id: Number(userId) },
+      where: { userId: Number(userId) },
     });
 
     if (!user) {

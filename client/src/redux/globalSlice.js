@@ -6,6 +6,7 @@ const globalSlice = createSlice({
   initialState: {
     isSidebarCollapsed: false,
     isDarkMode: false,
+    filteredTasks: [],
   },
   reducers: {
     toggleSidebar: (state) => {
@@ -17,11 +18,16 @@ const globalSlice = createSlice({
     setDarkMode: (state, action) => {
       state.isDarkMode = action.payload;
     },
+    setFilteredTasks: (state, action) => {
+      state.filteredTasks = action.payload;
+    },
   },
 });
 
 export const isDarkMode = (state) => state.global.isDarkMode;
+export const getFilteredTasks = (state) => state.global.filteredTasks;
 
-export const { toggleSidebar, toggleDarkMode, setDarkMode } =
+export const { toggleSidebar, toggleDarkMode, setDarkMode, setFilteredTasks } =
   globalSlice.actions;
+
 export default globalSlice.reducer;

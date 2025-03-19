@@ -11,36 +11,48 @@ import useTheme from "../../../lib/utils/useTheme";
 const Project = () => {
   const { id } = useParams();
   const [theme, toggleTheme] = useTheme();
-  const [projectData, setProjectData] = useState(null);
+  const [project, setProject] = useState([]);
   const [activeTab, setActiveTab] = useState("Board");
   const [isNewTaskOpen, setIsNewTaskOpen] = useState(false);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     const fetchProjectData = async () => {
       try {
-        const response = await axios.get(`/api/projects/${id}`);
-        setProjectData(response.data);
+        const response = await axios.get(
+          `http://localhost:5000/projects/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setProject(response.data.name);
       } catch (error) {
-        console.error("Error fetching project data:", error);
+        console.error("Error fetching projects:", error);
       }
     };
 
     fetchProjectData();
   }, [id]);
 
-  if (!projectData) {
+  if (!project) {
     return <div>Loading...</div>;
   }
-
+  // custom-gradient
   return (
-    // custom-gradient
-    <div className="h-full custom-gradient">
+    <div className="h-full ">
       <ModalNewTask
         isOpen={isNewTaskOpen}
         onClose={() => setIsNewTaskOpen(false)}
         id={id}
       />
-      <ProjectHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+      <ProjectHeader
+        project={project}
+        id={id}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
 
       {activeTab === "Board" && (
         <Board id={id} setIsNewTaskOpen={setIsNewTaskOpen} />

@@ -22,7 +22,7 @@ export const dataGridSxStyles = (isDarkMode) => ({
   "& .MuiDataGrid-cell": {
     border: "none",
     "&:focus": {
-      outline: "none", // Remove the blue border
+      outline: "none",
     },
   },
   "& .MuiDataGrid-row": {
@@ -40,13 +40,13 @@ export const dataGridSxStyles = (isDarkMode) => ({
     },
   },
   "& .MuiDataGrid-withBorderColor": {
-    borderColor: `${isDarkMode ? "#2d3135" : "e5e7eb"}`,
+    borderColor: `${isDarkMode ? "#2d3135" : "#e5e7eb"}`,
   },
   "& .MuiDataGrid-virtualScroller": {
-    overflowX: "hidden !important", // Force hide the horizontal scrollbar
+    overflowX: "hidden !important",
   },
   "& .MuiDataGrid-virtualScroller::-webkit-scrollbar": {
-    display: "none", // Hide the scrollbar for WebKit browsers
+    display: "none",
   },
   "& .MuiDataGrid-virtualScroller": {
     msOverflowStyle: "none", // Hide scrollbar for IE and Edge
